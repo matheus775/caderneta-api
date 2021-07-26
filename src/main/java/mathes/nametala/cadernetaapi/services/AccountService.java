@@ -8,5 +8,8 @@ public interface AccountService {
 	
 	public List<AccountEntity> getAccounts();
 	public AccountEntity getAccount(String user);
+	public  void newAccount(AccountEntity account);
+	public void delAccount(Long userId);
+	public void updtAccount(AccountEntity account, Long userId);
 	
 }

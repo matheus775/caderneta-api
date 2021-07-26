@@ -24,5 +24,25 @@ public class AccountServiceImpl implements AccountService{
 	public AccountEntity getAccount(String user) {
 		return accountRepositoy.findByUsername(user).get(0);
 	}
+
+	@Override
+	public void newAccount(AccountEntity account) {
+		accountRepositoy.save(account);
+	}
+
+	@Override
+	public void delAccount(Long userId) {
+		accountRepositoy.delete(accountRepositoy.findById(userId).get());
+	}
+
+	@Override
+	public void updtAccount(AccountEntity account,Long userId) {
+		AccountEntity accountdB = accountRepositoy.findById(userId).get();
+		accountdB.setUsername(account.getUsername());
+		accountdB.setEmail(account.getEmail());
+		accountdB.setPassword(account.getPassword());
+		accountdB.setRoles(account.getRoles());
+		accountRepositoy.save(accountdB);
+	}
 	
 }

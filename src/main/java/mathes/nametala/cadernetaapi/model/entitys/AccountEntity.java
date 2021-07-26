@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -22,8 +24,14 @@ public class AccountEntity {
 	private String username;
 	private String password;
 	private String email;
+	
 	@ManyToMany
-	private Set<RoleEntity> likedCourses;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JoinTable(
+			  name = "accounts_roles", 
+			  joinColumns = @JoinColumn(name = "user_id"), 
+			  inverseJoinColumns = @JoinColumn(name = "role_id"))
+	private Set<RoleEntity> roles;
 	
 	
 	public Long getId() {
@@ -49,6 +57,12 @@ public class AccountEntity {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public Set<RoleEntity> getRoles() {
+		return roles;
+	}
+	public void setRoles(Set<RoleEntity> roles) {
+		this.roles = roles;
 	}
 	
 }
