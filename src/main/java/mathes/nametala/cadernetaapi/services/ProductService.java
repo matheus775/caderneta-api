@@ -9,5 +9,6 @@ public interface ProductService {
 	public List<ProductEntity> getProducts();
 	public void delProduct(Long id);
 	public void newProduct(ProductEntity product);
+	public List<ProductEntity> getByNameContaning(String name);
 	
 }

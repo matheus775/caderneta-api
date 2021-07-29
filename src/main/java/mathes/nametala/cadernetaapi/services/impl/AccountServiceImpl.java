@@ -32,7 +32,7 @@ public class AccountServiceImpl implements AccountService{
 
 	@Override
 	public void delAccount(Long userId) {
-		accountRepositoy.delete(accountRepositoy.findById(userId).get());
+		accountRepositoy.deleteById(userId);
 	}
 
 	@Override

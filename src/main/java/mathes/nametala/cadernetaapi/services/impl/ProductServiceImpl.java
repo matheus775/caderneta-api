@@ -22,13 +22,17 @@ public class ProductServiceImpl implements ProductService{
 
 	@Override
 	public void delProduct(Long id) {
-		ProductEntity p = productRepository.findById(id).get();
-		productRepository.delete(productRepository.findById(id).get());
+		productRepository.deleteById(id);
 	}
 
 	@Override
 	public void newProduct(ProductEntity product) {
 		productRepository.save(product);
+	}
+
+	@Override
+	public List<ProductEntity> getByNameContaning(String name) {
+		return productRepository.findByNameContainingIgnoreCase(name);
 	}
 
 }

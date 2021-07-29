@@ -23,7 +23,7 @@ public class CustomerEntity {
 	private String email;
 	
 	@Column(name="customer_adress")
-	private String customer_adress;
+	private String customerAdress;
 	
 	@Column(name="customer_cpf")
 	private String cpf;
@@ -52,12 +52,12 @@ public class CustomerEntity {
 		this.email = email;
 	}
 
-	public String getCustomer_adress() {
-		return customer_adress;
+	public String getCustomerAdress() {
+		return customerAdress;
 	}
 
-	public void setCustomer_adress(String customer_adress) {
-		this.customer_adress = customer_adress;
+	public void setCustomerAdress(String customerAdress) {
+		this.customerAdress = customerAdress;
 	}
 
 	public String getCpf() {

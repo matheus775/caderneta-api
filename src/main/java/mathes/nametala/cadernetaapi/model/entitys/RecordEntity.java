@@ -35,7 +35,7 @@ public class RecordEntity {
 			  name = "product_record", 
 			  joinColumns = @JoinColumn(name = "record_id"), 
 			  inverseJoinColumns = @JoinColumn(name = "product_id"))
-	private Set<RoleEntity> products;
+	private Set<ProductEntity> products;
 	
 	@ManyToOne()
 	@JoinColumn(name="user_id", referencedColumnName = "user_id")    
@@ -69,11 +69,11 @@ public class RecordEntity {
 		this.createdOn = createdOn;
 	}
 
-	public Set<RoleEntity> getProducts() {
+	public Set<ProductEntity> getProducts() {
 		return products;
 	}
 
-	public void setProducts(Set<RoleEntity> products) {
+	public void setProducts(Set<ProductEntity> products) {
 		this.products = products;
 	}
 

@@ -28,6 +28,12 @@ public class ProductResource {
 		return productService.getProducts();
 	}
 	
+	@GetMapping("/nameLike/{name}")
+	@PreAuthorize("anyAuthority()")
+	public List<ProductEntity> getByNameContaining(@PathVariable String name){
+		return productService.getByNameContaning(name);
+	}
+	
 	@DeleteMapping("/{id}")
 	@PreAuthorize("anyAuthority()")
 	public void delProduct(@PathVariable Long id) {
