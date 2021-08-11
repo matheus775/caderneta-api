@@ -2,6 +2,8 @@ package mathes.nametala.cadernetaapi.resources;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +44,7 @@ public class ProductResource {
 	
 	@PostMapping
 	@PreAuthorize("anyAuthority()")
-	public void newProduct(@RequestBody ProductEntity product) {
+	public void newProduct(@Valid @RequestBody ProductEntity product) {
 		productService.newProduct(product);
 	}
 

@@ -29,10 +29,16 @@ public class AccountsResource {
 		return accountService.getAccounts();
 	}
 	
-	@GetMapping("/{userName}")
+	@GetMapping("/byName/{name}")
+	@PreAuthorize("anyAuthority")
+	public List<AccountEntity> getByName(@PathVariable String name){
+		return accountService.getByUserName(name);
+	}
+	
+	@GetMapping("/{id}")
 	@PreAuthorize("anyAuthority()")
-	public AccountEntity getAccount(@PathVariable String userName) {
-		return accountService.getAccount(userName);
+	public AccountEntity getAccount(@PathVariable Long id) {
+		return accountService.getAccount(id);
 	}
 	
 	@PostMapping
@@ -41,10 +47,10 @@ public class AccountsResource {
 		accountService.newAccount(account);
 	}
 	
-	@DeleteMapping("/{userId}")
+	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAutority(Administrador)")
-	public void delAccount(@PathVariable Long userId ) {
-		accountService.delAccount(userId);
+	public void delAccount(@PathVariable Long id ) {
+		accountService.delAccount(id);
 	}
 	
 	@PutMapping("/{userId}")

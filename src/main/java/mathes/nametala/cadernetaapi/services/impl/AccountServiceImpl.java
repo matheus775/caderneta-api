@@ -21,8 +21,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public AccountEntity getAccount(String user) {
-		return accountRepositoy.findByUsername(user).get(0);
+	public AccountEntity getAccount(Long id) {
+		return accountRepositoy.findById(id).get();
 	}
 
 	@Override
@@ -31,18 +31,23 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public void delAccount(Long userId) {
-		accountRepositoy.deleteById(userId);
+	public void delAccount(Long id) {
+		accountRepositoy.deleteById(id);
 	}
 
 	@Override
-	public void updtAccount(AccountEntity account,Long userId) {
-		AccountEntity accountdB = accountRepositoy.findById(userId).get();
+	public void updtAccount(AccountEntity account,Long id) {
+		AccountEntity accountdB = accountRepositoy.findById(id).get();
 		accountdB.setUsername(account.getUsername());
 		accountdB.setEmail(account.getEmail());
 		accountdB.setPassword(account.getPassword());
 		accountdB.setRoles(account.getRoles());
 		accountRepositoy.save(accountdB);
+	}
+
+	@Override
+	public List<AccountEntity> getByUserName(String userName) {
+		return accountRepositoy.findByUsernameContainingIgnoreCase(userName);
 	}
 	
 }

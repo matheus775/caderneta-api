@@ -23,16 +23,16 @@ public class RecordResource {
 	@Autowired
 	private RecordService recordService;
 	
-	@GetMapping("/byUserName/{userName}")
+	@GetMapping("/byUser/{userId}")
 	@PreAuthorize("anyAuthority()")
-	public List<RecordEntity> getByUserName(@PathVariable String userName){
-		return recordService.getByUsername(userName);
+	public List<RecordEntity> getByUserName(@PathVariable Long userId){
+		return recordService.getByUserId(userId);
 	}
 	
-	@GetMapping("/byCustomerName/{customerName}")
+	@GetMapping("/byCustomer/{customerId}")
 	@PreAuthorize("anyAuthority()")
-	public List<RecordEntity> getByCustomerName(@PathVariable String customerName){
-		return recordService.getByCustomerName(customerName);
+	public List<RecordEntity> getByCustomerName(@PathVariable Long customerId){
+		return recordService.getByCustomerId(customerId);
 	}
 	
 	@GetMapping("/{id}")

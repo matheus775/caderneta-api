@@ -8,6 +8,6 @@ import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
 
 public interface CustomerRepository extends JpaRepository<CustomerEntity, Long>{
 	
-	public List<CustomerEntity> findByName(String name);
+	public List<CustomerEntity> findByNameContainingIgnoreCase(String name);
 	
 }

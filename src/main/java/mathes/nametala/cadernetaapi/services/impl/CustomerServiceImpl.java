@@ -21,13 +21,13 @@ public class CustomerServiceImpl implements CustomerService{
 	}
 
 	@Override
-	public CustomerEntity getCustomer(String name) {
-		return customerRepository.findByName(name).get(0);
+	public CustomerEntity getCustomer(Long id) {
+		return customerRepository.findById(id).get();
 	}
 
 	@Override
-	public void newCustomer(CustomerEntity customer) {
-		customerRepository.save(customer);
+	public CustomerEntity newCustomer(CustomerEntity customer) {
+		return customerRepository.save(customer);
 		
 	}
 
@@ -46,6 +46,11 @@ public class CustomerServiceImpl implements CustomerService{
 		customerDb.setCustomerAdress(customer.getCustomerAdress());
 		customerRepository.save(customerDb);
 		
+	}
+
+	@Override
+	public List<CustomerEntity> getCustomersByName(String customerName) {
+		return customerRepository.findByNameContainingIgnoreCase(customerName);
 	}
 
 }

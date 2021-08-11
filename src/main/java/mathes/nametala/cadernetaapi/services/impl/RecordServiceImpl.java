@@ -23,14 +23,15 @@ public class RecordServiceImpl implements RecordService{
 	@Autowired
 	private CustomerRepository customerRepository;
 	
+	
 	@Override
-	public List<RecordEntity> getByUsername(String userName) {
-		return recordRepository.findByAccount(accountRepositoy.findByUsername(userName).get(0));
+	public List<RecordEntity> getByUserId(Long userId) {
+		return recordRepository.findByAccount(accountRepositoy.findById(userId).get());
 	}
 
 	@Override
-	public List<RecordEntity> getByCustomerName(String customerName) {
-		return recordRepository.findByCustomer(customerRepository.findByName(customerName).get(0));
+	public List<RecordEntity> getByCustomerId(Long customerId) {
+		return recordRepository.findByCustomer(customerRepository.findById(customerId).get());
 	}
 
 	@Override
@@ -56,7 +57,5 @@ public class RecordServiceImpl implements RecordService{
 	public RecordEntity getRecord(Long id) {
 		return recordRepository.findById(id).get();
 	}
-
-	
 	
 }
