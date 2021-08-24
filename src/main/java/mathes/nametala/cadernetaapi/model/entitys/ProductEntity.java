@@ -25,7 +25,7 @@ public class ProductEntity {
 	@Column(name="product_name")
 	private String name ;
 	
-	
+	@NotNull
 	private Double  value;
 	
 	@Column(name="created_on")

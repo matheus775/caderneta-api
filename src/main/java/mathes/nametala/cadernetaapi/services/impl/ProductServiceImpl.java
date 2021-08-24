@@ -35,4 +35,9 @@ public class ProductServiceImpl implements ProductService{
 		return productRepository.findByNameContainingIgnoreCase(name);
 	}
 
+	@Override
+	public ProductEntity getProduct(Long id) {
+		return productRepository.getById(id);
+	}
+
 }

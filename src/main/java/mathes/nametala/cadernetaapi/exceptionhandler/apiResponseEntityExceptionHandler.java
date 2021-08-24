@@ -1,7 +1,9 @@
 package mathes.nametala.cadernetaapi.exceptionhandler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -13,8 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
 
 @ControllerAdvice
 public class apiResponseEntityExceptionHandler extends ResponseEntityExceptionHandler{
@@ -31,6 +36,22 @@ public class apiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
 		
 	}
 	
+	@ExceptionHandler(NoSuchElementException.class)
+	public ResponseEntity<Object> handleNoSuchElementException(NoSuchElementException ex, WebRequest request){
+		String userMessage=messageSource.getMessage("no-such-element", null,LocaleContextHolder.getLocale());
+		String devMessage = ex.getMessage();
+		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
+		return ResponseEntity.badRequest().body(errors);
+	}
+	
+	@ExceptionHandler(IdNotFoundException.class)
+	protected ResponseEntity<Object> handleIdNotFoundException(IdNotFoundException ex){
+		String userMessage=messageSource.getMessage("id-not-found", null,LocaleContextHolder.getLocale());
+		String devMessage = ex.toString();
+		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
+		return ResponseEntity.badRequest().body(errors);
+	}
+	
 	private List<MyError> newErrorsList(BindingResult bindingResult) {
 		List<MyError> errors = new ArrayList<>();
 		
@@ -43,6 +64,7 @@ public class apiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
 	}
 	
 	public static class MyError{
+		
 		
 		String userErrorMessage;
 		String devErrorMessage;

@@ -11,6 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name="accounts")
@@ -21,10 +25,19 @@ public class AccountEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@NotNull
+	@Size(min = 3, max = 50)
 	private String username;
+	
+	@NotNull
+	@Size(min = 8, max = 50)
 	private String password;
+	
+	@Email
 	private String email;
 	
+	@NotNull
+	@NotEmpty
 	@ManyToMany
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JoinTable(

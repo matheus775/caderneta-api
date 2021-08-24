@@ -30,6 +30,12 @@ public class ProductResource {
 		return productService.getProducts();
 	}
 	
+	@GetMapping("{/id}")
+	@PreAuthorize("AnyAuthority")
+	public ProductEntity getProduct(@PathVariable Long id) {
+		return productService.getProduct(id);
+	}
+	
 	@GetMapping("/nameLike/{name}")
 	@PreAuthorize("anyAuthority()")
 	public List<ProductEntity> getByNameContaining(@PathVariable String name){

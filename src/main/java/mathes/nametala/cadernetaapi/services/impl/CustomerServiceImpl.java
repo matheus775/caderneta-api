@@ -1,10 +1,12 @@
 package mathes.nametala.cadernetaapi.services.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
 import mathes.nametala.cadernetaapi.repository.CustomerRepository;
 import mathes.nametala.cadernetaapi.services.CustomerService;
@@ -22,7 +24,9 @@ public class CustomerServiceImpl implements CustomerService{
 
 	@Override
 	public CustomerEntity getCustomer(Long id) {
-		return customerRepository.findById(id).get();
+		Optional<CustomerEntity> customer = customerRepository.findById(id); 
+		if(customer.isEmpty()) throw new IdNotFoundException(id, CustomerEntity.class);
+		return customer.get();
 	}
 
 	@Override
