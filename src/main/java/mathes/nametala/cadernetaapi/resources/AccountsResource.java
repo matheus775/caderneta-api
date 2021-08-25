@@ -7,6 +7,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import mathes.nametala.cadernetaapi.event.NewResourceEvent;
@@ -35,13 +39,13 @@ public class AccountsResource {
 	
 	@GetMapping
 	@PreAuthorize("anyAuthority()")
-	public List<AccountEntity> getAccounts(){
-		return accountService.getAccounts();
+	public Page<AccountEntity> getAccounts(Pageable pageable){
+		return accountService.getAccounts(pageable);
 	}
 	
-	@GetMapping("/byName/{name}")
+	@GetMapping("/search")
 	@PreAuthorize("anyAuthority")
-	public List<AccountEntity> getByName(@PathVariable String name){
+	public List<AccountEntity> getByName(@RequestParam String name){
 		return accountService.getByUserName(name);
 	}
 	
@@ -61,6 +65,7 @@ public class AccountsResource {
 	
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasAutority(Administrador)")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delAccount(@PathVariable Long id ) {
 		accountService.delAccount(id);
 	}
@@ -70,7 +75,7 @@ public class AccountsResource {
 	public  ResponseEntity<AccountEntity>  updtAccount(@PathVariable Long userId,@Valid @RequestBody AccountEntity account, HttpServletResponse response) {
 		AccountEntity changedAccount = accountService.updtAccount(account, userId);
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedAccount.getId()));
-		return ResponseEntity.status(HttpStatus.CREATED).body(changedAccount);
+		return ResponseEntity.status(HttpStatus.OK).body(changedAccount);
 	}
 	
 }

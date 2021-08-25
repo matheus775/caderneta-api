@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,15 @@ public class apiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
 		String userMessage=messageSource.getMessage("no-such-element", null,LocaleContextHolder.getLocale());
 		String devMessage = ex.getMessage();
 		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
-		return ResponseEntity.badRequest().body(errors);
+		return handleExceptionInternal(ex, errors, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+	}
+	
+	@ExceptionHandler({EmptyResultDataAccessException.class})
+	public ResponseEntity<Object> handleEmptyResultDataAccessException(EmptyResultDataAccessException ex, WebRequest request){
+		String userMessage=messageSource.getMessage("id-not-found", null,LocaleContextHolder.getLocale());
+		String devMessage = ex.getMessage();
+		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
+		return handleExceptionInternal(ex, errors, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
 	}
 	
 	@ExceptionHandler(IdNotFoundException.class)

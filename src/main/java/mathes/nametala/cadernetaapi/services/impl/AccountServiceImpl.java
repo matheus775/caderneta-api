@@ -1,10 +1,10 @@
 package mathes.nametala.cadernetaapi.services.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
@@ -24,15 +24,13 @@ public class AccountServiceImpl implements AccountService{
 	private RoleRepository roleRepository;
 	
 	@Override
-	public List<AccountEntity> getAccounts() {
-		return accountRepositoy.findAll();
+	public Page<AccountEntity> getAccounts(Pageable pageable) {
+		return accountRepositoy.filter(pageable);
 	}
 
 	@Override
 	public AccountEntity getAccount(Long id) {
-		Optional<AccountEntity> account = accountRepositoy.findById(id); 
-		if(account.isEmpty()) throw new IdNotFoundException(id, AccountEntity.class);
-		return account.get();
+		return accountRepositoy.findById(id).get();
 	}
 
 	@Override
@@ -52,7 +50,6 @@ public class AccountServiceImpl implements AccountService{
 
 	@Override
 	public  AccountEntity  updtAccount(AccountEntity account,Long id) {
-		if(accountRepositoy.findById(id).isEmpty()) throw new IdNotFoundException(id, AccountEntity.class);
 		AccountEntity accountdB = accountRepositoy.findById(id).get();
 		for(RoleEntity role: account.getRoles()) {
 			if(roleRepository.findById(role.getId()).isEmpty())
