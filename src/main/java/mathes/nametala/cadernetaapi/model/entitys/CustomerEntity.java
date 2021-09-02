@@ -6,6 +6,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
 @Table(name="customer")
@@ -16,15 +21,20 @@ public class CustomerEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Pattern(regexp = "^[a-zA-Z\\u00C0-\\u017F´\s]{0,}$")
 	@Column(name="customer_name")
 	private String name;
 	
+	@Email
 	@Column(name="customer_email")
 	private String email;
 	
+	@NotEmpty
 	@Column(name="customer_adress")
-	private String customerAdress;
+	private String adress;
 	
+	@NotEmpty
+	@CPF
 	@Column(name="customer_cpf")
 	private String cpf;
 
@@ -53,11 +63,11 @@ public class CustomerEntity {
 	}
 
 	public String getCustomerAdress() {
-		return customerAdress;
+		return adress;
 	}
 
 	public void setCustomerAdress(String customerAdress) {
-		this.customerAdress = customerAdress;
+		this.adress = customerAdress;
 	}
 
 	public String getCpf() {

@@ -1,12 +1,14 @@
 package mathes.nametala.cadernetaapi.resources;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import mathes.nametala.cadernetaapi.event.NewResourceEvent;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
@@ -36,8 +38,8 @@ public class CustomerResource {
 	
 	@GetMapping
 	@PreAuthorize("anyAuthority()")
-	public List<CustomerEntity> getCustomers(){
-		return customerService.getCustomers();
+	public Page<CustomerEntity> getCustomers(Pageable pageable, String name){
+		return customerService.getCustomers(pageable, name);
 	}
 	
 	@GetMapping("/{id}")
@@ -46,9 +48,15 @@ public class CustomerResource {
 		return customerService.getCustomer(id);
 	}
 	
+	@GetMapping("/byCpf/{cpf}")
+	@PreAuthorize("anyAuthority")
+	public List<CustomerEntity> getCUstomerByCpf(@PathVariable String cpf) {
+		return customerService.getCustomerByCpf(cpf);
+	}
+	
 	@PostMapping
 	@PreAuthorize("anyAuthority()")
-	public ResponseEntity<CustomerEntity> newCustomer(@RequestBody CustomerEntity customer, HttpServletResponse response) {
+	public ResponseEntity<CustomerEntity> newCustomer(@Valid @RequestBody CustomerEntity customer, HttpServletResponse response) {
 		CustomerEntity newCustomer = customerService.newCustomer(customer);
 		
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, newCustomer.getId()));
@@ -58,19 +66,17 @@ public class CustomerResource {
 	
 	@DeleteMapping("/{id}")
 	@PreAuthorize("anyAuthority")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delCustomer(@PathVariable Long id) {
 		customerService.delCustomer(id);
 	}
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("anyAuthority")
-	public void updtCustomer(@PathVariable Long id, @RequestBody CustomerEntity customer) {
-		customerService.uptdCustomer(customer, id);
+	public ResponseEntity<CustomerEntity> updtCustomer(@PathVariable Long id,@Valid @RequestBody CustomerEntity customer, HttpServletResponse response) {
+		CustomerEntity  changedCustomer = customerService.uptdCustomer(customer, id);
+		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedCustomer.getId()));
+		return ResponseEntity.status(HttpStatus.OK).body(changedCustomer);
 	}
 	
-	@GetMapping("/byName/{name}")
-	@PreAuthorize("anyAuthority")
-	public List<CustomerEntity> getByName(@PathVariable String name){
-		return customerService.getCustomersByName(name);
-	}
 }

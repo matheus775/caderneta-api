@@ -1,7 +1,5 @@
 package mathes.nametala.cadernetaapi.services.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +10,7 @@ import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
 import mathes.nametala.cadernetaapi.repository.AccountRepositoy;
 import mathes.nametala.cadernetaapi.repository.RoleRepository;
+import mathes.nametala.cadernetaapi.repository.filter.AccountFilter;
 import mathes.nametala.cadernetaapi.services.AccountService;
 
 @Service
@@ -24,8 +23,14 @@ public class AccountServiceImpl implements AccountService{
 	private RoleRepository roleRepository;
 	
 	@Override
-	public Page<AccountEntity> getAccounts(Pageable pageable) {
-		return accountRepositoy.filter(pageable);
+	public Page<AccountEntity> getAccounts(AccountFilter accountFilter, Pageable pageable) {
+		if(accountFilter.getRoles()!=null) {
+			for(Long role: accountFilter.getRoles()) {
+				if(roleRepository.findById(role).isEmpty())
+					throw new IdNotFoundException(role, RoleEntity.class);
+			};
+		}
+		return accountRepositoy.filter(accountFilter, pageable);
 	}
 
 	@Override
@@ -54,7 +59,6 @@ public class AccountServiceImpl implements AccountService{
 		for(RoleEntity role: account.getRoles()) {
 			if(roleRepository.findById(role.getId()).isEmpty())
 				throw new IdNotFoundException(role.getId(), RoleEntity.class);
-			
 		};
 		accountdB.setUsername(account.getUsername());
 		accountdB.setEmail(account.getEmail());
@@ -63,9 +67,6 @@ public class AccountServiceImpl implements AccountService{
 		return accountRepositoy.save(accountdB);
 	}
 
-	@Override
-	public List<AccountEntity> getByUserName(String userName) {
-		return accountRepositoy.findByUsernameContainingIgnoreCase(userName);
-	}
+
 	
 }

@@ -1,7 +1,5 @@
 package mathes.nametala.cadernetaapi.resources;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -19,12 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import mathes.nametala.cadernetaapi.event.NewResourceEvent;
 import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
+import mathes.nametala.cadernetaapi.repository.filter.AccountFilter;
 import mathes.nametala.cadernetaapi.services.AccountService;
 
 @RestController
@@ -39,14 +37,8 @@ public class AccountsResource {
 	
 	@GetMapping
 	@PreAuthorize("anyAuthority()")
-	public Page<AccountEntity> getAccounts(Pageable pageable){
-		return accountService.getAccounts(pageable);
-	}
-	
-	@GetMapping("/search")
-	@PreAuthorize("anyAuthority")
-	public List<AccountEntity> getByName(@RequestParam String name){
-		return accountService.getByUserName(name);
+	public Page<AccountEntity> getAccounts(AccountFilter accountFilter, Pageable pageable){
+		return accountService.getAccounts(accountFilter, pageable);
 	}
 	
 	@GetMapping("/{id}")
