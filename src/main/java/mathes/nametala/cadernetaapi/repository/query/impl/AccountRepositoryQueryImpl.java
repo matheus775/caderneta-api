@@ -70,10 +70,11 @@ public class AccountRepositoryQueryImpl implements AccountRepositoryQuery {
 
 		Predicate[] predicates = new Predicate[predicateList.size()];
 		predicateList.toArray(predicates);
+		
 		criteriaQuery.where(predicates);
 		criteriaQuery.distinct(true);
-
 		criteriaQuery.select(criteriaBuilder.countDistinct(root));
+		
 		return entityManager.createQuery(criteriaQuery).getSingleResult();
 
 	}

@@ -1,12 +1,13 @@
 package mathes.nametala.cadernetaapi.services.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
 import mathes.nametala.cadernetaapi.repository.ProductRepository;
+import mathes.nametala.cadernetaapi.repository.filter.ProductFilter;
 import mathes.nametala.cadernetaapi.services.ProductService;
 
 @Service
@@ -16,8 +17,8 @@ public class ProductServiceImpl implements ProductService{
 	private ProductRepository productRepository;
 	
 	@Override
-	public List<ProductEntity> getProducts() {
-		return productRepository.findAll();
+	public Page<ProductEntity> getProducts(Pageable pageable, ProductFilter productFilter) {
+		return productRepository.filter(pageable, productFilter);
 	}
 
 	@Override
@@ -28,11 +29,6 @@ public class ProductServiceImpl implements ProductService{
 	@Override
 	public void newProduct(ProductEntity product) {
 		productRepository.save(product);
-	}
-
-	@Override
-	public List<ProductEntity> getByNameContaning(String name) {
-		return productRepository.findByNameContainingIgnoreCase(name);
 	}
 
 	@Override

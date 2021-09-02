@@ -1,12 +1,10 @@
 package mathes.nametala.cadernetaapi.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
+import mathes.nametala.cadernetaapi.repository.query.ProductRepositoryQuery;
 
-public interface ProductRepository extends JpaRepository<ProductEntity, Long>{
+public interface ProductRepository extends JpaRepository<ProductEntity, Long>, ProductRepositoryQuery{
 	
-	public List<ProductEntity> findByNameContainingIgnoreCase(String name);
 }

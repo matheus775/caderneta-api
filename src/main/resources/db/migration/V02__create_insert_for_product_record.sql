@@ -11,7 +11,7 @@ CREATE TABLE customer(
 CREATE TABLE product (
 	product_id serial PRIMARY KEY,
 	product_name VARCHAR ( 50 ) NOT NULL,
-	value VARCHAR ( 50 ) NOT NULL,
+	value DECIMAL ( 50 ) NOT NULL,
 	created_on DATE NOT NULL 
 );   
 

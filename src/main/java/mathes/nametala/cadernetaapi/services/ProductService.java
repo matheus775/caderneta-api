@@ -1,15 +1,16 @@
 package mathes.nametala.cadernetaapi.services;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
+import mathes.nametala.cadernetaapi.repository.filter.ProductFilter;
 
 public interface ProductService {
 	
 	public ProductEntity getProduct(Long id);
-	public List<ProductEntity> getProducts();
+	public Page<ProductEntity> getProducts(Pageable pageable, ProductFilter productFilter);
 	public void delProduct(Long id);
 	public void newProduct(ProductEntity product);
-	public List<ProductEntity> getByNameContaning(String name);
 	
 }
