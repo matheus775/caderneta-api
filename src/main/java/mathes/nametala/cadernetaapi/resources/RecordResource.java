@@ -3,6 +3,8 @@ package mathes.nametala.cadernetaapi.resources;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
+import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
 import mathes.nametala.cadernetaapi.services.RecordService;
 
 @RestController
@@ -33,6 +36,12 @@ public class RecordResource {
 	@PreAuthorize("anyAuthority()")
 	public List<RecordEntity> getByCustomerName(@PathVariable Long customerId){
 		return recordService.getByCustomerId(customerId);
+	}
+
+	@GetMapping
+	@PreAuthorize("anyAuthority()")
+	public Page<RecordEntity> getRecords(Pageable pageable,RecordFilter recordFilter) {
+		return recordService.getRecords(pageable, recordFilter);
 	}
 	
 	@GetMapping("/{id}")

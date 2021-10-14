@@ -3,12 +3,15 @@ package mathes.nametala.cadernetaapi.services.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
 import mathes.nametala.cadernetaapi.repository.AccountRepositoy;
 import mathes.nametala.cadernetaapi.repository.CustomerRepository;
 import mathes.nametala.cadernetaapi.repository.RecordRepository;
+import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
 import mathes.nametala.cadernetaapi.services.RecordService;
 
 @Service
@@ -56,6 +59,11 @@ public class RecordServiceImpl implements RecordService{
 	@Override
 	public RecordEntity getRecord(Long id) {
 		return recordRepository.findById(id).get();
+	}
+
+	@Override
+	public Page<RecordEntity> getRecords(Pageable pageable, RecordFilter recordFilter) {
+		return recordRepository.filter(pageable, recordFilter);
 	}
 	
 }

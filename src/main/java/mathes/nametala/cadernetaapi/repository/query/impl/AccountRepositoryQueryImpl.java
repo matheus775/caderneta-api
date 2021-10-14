@@ -89,8 +89,8 @@ public class AccountRepositoryQueryImpl implements AccountRepositoryQuery {
 		if (accountFilter.getRoles() != null) {
 
 			Join<AccountEntity, RoleEntity> join = root.join("roles");
-			Path<Long> campoRoleId = join.get("id");
-			Predicate predRoles = criteriaBuilder.isTrue(campoRoleId.in(accountFilter.getRoles()));
+			Path<Long> roleId = join.get("id");
+			Predicate predRoles = criteriaBuilder.isTrue(roleId.in(accountFilter.getRoles()));
 
 			predicateList.add(predRoles);
 		}
