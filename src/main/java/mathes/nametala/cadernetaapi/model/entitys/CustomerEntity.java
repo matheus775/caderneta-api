@@ -62,11 +62,11 @@ public class CustomerEntity {
 		this.email = email;
 	}
 
-	public String getCustomerAdress() {
+	public String getAdress() {
 		return adress;
 	}
 
-	public void setCustomerAdress(String customerAdress) {
+	public void setAdress(String customerAdress) {
 		this.adress = customerAdress;
 	}
 
@@ -76,6 +76,12 @@ public class CustomerEntity {
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
+	}
+
+	@Override
+	public String toString() {
+		return "{\"id\":" + id + ",\"name\":\"" + name + "\",\"email\":\"" + email + "\",\"adress\":\"" + adress + "\",\"cpf\":\""
+				+cpf + "\"}";
 	}
 	
 	

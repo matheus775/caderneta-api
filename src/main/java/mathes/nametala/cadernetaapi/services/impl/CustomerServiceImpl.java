@@ -7,8 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.CpfNotFoundException;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
 import mathes.nametala.cadernetaapi.repository.CustomerRepository;
+import mathes.nametala.cadernetaapi.repository.filter.CustomerFilter;
 import mathes.nametala.cadernetaapi.services.CustomerService;
 
 @Service
@@ -18,10 +20,8 @@ public class CustomerServiceImpl implements CustomerService{
 	private CustomerRepository customerRepository;
 	
 	@Override
-	public Page<CustomerEntity> getCustomers(Pageable pageable, String customerName) {
-		if(customerName!=null)
-			return customerRepository.findByNameContainingIgnoreCase(pageable,customerName);
-		return customerRepository.findAll(pageable);
+	public Page<CustomerEntity> getCustomers(Pageable pageable, CustomerFilter customerFilter) {
+		return customerRepository.filter(pageable, customerFilter);
 	}
 
 	@Override
@@ -30,8 +30,10 @@ public class CustomerServiceImpl implements CustomerService{
 	}
 
 	@Override
-	public List<CustomerEntity> getCustomerByCpf(String cpf) {
-		return customerRepository.findByCpf(cpf);
+	public CustomerEntity getCustomerByCpf(String cpf) {
+		List<CustomerEntity>  a = customerRepository.findByCpf(cpf);
+		if(a.isEmpty()) throw new CpfNotFoundException(cpf, CustomerEntity.class);
+		return a.get(0);
 	}
 	
 	@Override
@@ -52,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService{
 		customerDb.setCpf(customer.getCpf());
 		customerDb.setEmail(customer.getEmail());
 		customerDb.setName(customer.getName());
-		customerDb.setCustomerAdress(customer.getCustomerAdress());
+		customerDb.setAdress(customer.getAdress());
 		return customerRepository.save(customerDb);
 		
 	}

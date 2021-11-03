@@ -1,7 +1,5 @@
 package mathes.nametala.cadernetaapi.resources;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -24,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mathes.nametala.cadernetaapi.event.NewResourceEvent;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
+import mathes.nametala.cadernetaapi.repository.filter.CustomerFilter;
 import mathes.nametala.cadernetaapi.services.CustomerService;
 
 @RestController
@@ -36,10 +35,10 @@ public class CustomerResource {
 	@Autowired
 	private CustomerService customerService;
 	
-	@GetMapping
+	@GetMapping()
 	@PreAuthorize("anyAuthority()")
-	public Page<CustomerEntity> getCustomers(Pageable pageable, String name){
-		return customerService.getCustomers(pageable, name);
+	public Page<CustomerEntity> getCustomers(Pageable pageable, CustomerFilter customerFilter){
+		return customerService.getCustomers(pageable, customerFilter);
 	}
 	
 	@GetMapping("/{id}")
@@ -50,14 +49,14 @@ public class CustomerResource {
 	
 	@GetMapping("/byCpf/{cpf}")
 	@PreAuthorize("anyAuthority")
-	public List<CustomerEntity> getCUstomerByCpf(@PathVariable String cpf) {
+	public CustomerEntity getCUstomerByCpf(@PathVariable String cpf) {
 		return customerService.getCustomerByCpf(cpf);
 	}
 	
 	@PostMapping
 	@PreAuthorize("anyAuthority()")
 	public ResponseEntity<CustomerEntity> newCustomer(@Valid @RequestBody CustomerEntity customer, HttpServletResponse response) {
-		CustomerEntity newCustomer = customerService.newCustomer(customer);
+		CustomerEntity newCustomer = customerService.newCustomer(null);
 		
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, newCustomer.getId()));
 		
@@ -65,14 +64,14 @@ public class CustomerResource {
 	}
 	
 	@DeleteMapping("/{id}")
-	@PreAuthorize("anyAuthority")
+	@PreAuthorize("anyAuthority()")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delCustomer(@PathVariable Long id) {
 		customerService.delCustomer(id);
 	}
 	
 	@PutMapping("/{id}")
-	@PreAuthorize("anyAuthority")
+	@PreAuthorize("anyAuthority()")
 	public ResponseEntity<CustomerEntity> updtCustomer(@PathVariable Long id,@Valid @RequestBody CustomerEntity customer, HttpServletResponse response) {
 		CustomerEntity  changedCustomer = customerService.uptdCustomer(customer, id);
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedCustomer.getId()));

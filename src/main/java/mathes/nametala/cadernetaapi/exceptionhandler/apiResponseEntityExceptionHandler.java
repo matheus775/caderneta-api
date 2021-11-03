@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import javax.validation.ConstraintViolationException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.CpfNotFoundException;
 import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
 
 @ControllerAdvice
@@ -58,6 +57,14 @@ public class apiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
 	@ExceptionHandler(IdNotFoundException.class)
 	protected ResponseEntity<Object> handleIdNotFoundException(IdNotFoundException ex){
 		String userMessage=messageSource.getMessage("id-not-found", null,LocaleContextHolder.getLocale());
+		String devMessage = ex.toString();
+		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
+		return ResponseEntity.badRequest().body(errors);
+	}
+	
+	@ExceptionHandler(CpfNotFoundException.class)
+	protected ResponseEntity<Object> handleIdNotFoundException(CpfNotFoundException ex){
+		String userMessage=messageSource.getMessage("cpf-not-found", null,LocaleContextHolder.getLocale());
 		String devMessage = ex.toString();
 		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
 		return ResponseEntity.badRequest().body(errors);
