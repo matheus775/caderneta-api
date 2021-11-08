@@ -142,6 +142,7 @@ public class ProductResourceTest {
 		
 		ProductEntity expectedResult = this.createMockedProductEntity();
 		
+		
 		when(productService.newProduct(Mockito.any()))
 			.thenReturn(expectedResult);
 		

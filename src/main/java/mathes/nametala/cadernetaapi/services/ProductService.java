@@ -11,6 +11,6 @@ public interface ProductService {
 	public ProductEntity getProduct(Long id);
 	public Page<ProductEntity> getProducts(Pageable pageable, ProductFilter productFilter);
 	public void delProduct(Long id);
-	public void newProduct(ProductEntity product);
+	public ProductEntity newProduct(ProductEntity product);
 	
 }
