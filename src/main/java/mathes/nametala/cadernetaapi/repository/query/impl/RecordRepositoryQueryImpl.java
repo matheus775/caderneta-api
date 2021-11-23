@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
+import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
 import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
@@ -85,6 +87,39 @@ public class RecordRepositoryQueryImpl implements RecordRepositoryQuery{
 					criteriaBuilder.isTrue(productId.in(recordFilter.getProductsId())));
 			
 		}
+		if(recordFilter.getAccountId()!=null) {
+			Join<RecordEntity, AccountEntity> join = root.join("account");
+			Path<AccountEntity> accountId = join.get("id");
+			predicateList.add(
+					criteriaBuilder.isTrue(accountId.in(recordFilter.getAccountId())));
+			
+		}
+		
+		if(recordFilter.getCustomerId()!=null) {
+			Join<RecordEntity, CustomerEntity> join = root.join("customer");
+			Path<CustomerEntity> customerId = join.get("id");
+			predicateList.add(
+					criteriaBuilder.isTrue(customerId.in(recordFilter.getCustomerId())));
+		
+			
+		if(recordFilter.getMinTotal()!=null) 
+			predicateList.add(
+				criteriaBuilder.greaterThanOrEqualTo(root.get("total"), recordFilter.getMinTotal()));
+		
+		if(recordFilter.getMaxTotal()!=null)
+			predicateList.add(
+				criteriaBuilder.lessThanOrEqualTo(root.get("total"), recordFilter.getMaxTotal()));
+			
+		if(recordFilter.getMinCreatedOn()!=null)
+			predicateList.add(
+				criteriaBuilder.greaterThanOrEqualTo(root.get("createdOn"), recordFilter.getMinCreatedOn()));
+			
+		if(recordFilter.getMaxCreatedOn()!=null)
+			predicateList.add(
+				criteriaBuilder.lessThanOrEqualTo(root.get("createdOn"), recordFilter.getMaxCreatedOn()));
+			
+		}
+		
 		
 	}
 

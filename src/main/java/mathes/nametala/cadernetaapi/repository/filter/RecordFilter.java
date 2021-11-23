@@ -1,34 +1,33 @@
 package mathes.nametala.cadernetaapi.repository.filter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class RecordFilter {
 
 	
 
-	private Double total; 
+	private BigDecimal minTotal; 
 	
+	private BigDecimal maxTotal;
+	
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate minCreatedOn;
 	
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate maxCreatedOn; 
 	
 	private List<Long> productsId;
 	   
-	private Long accountId;
+	private List<Long> accountId;
 	
-	private Long customerId;
+	private List<Long> customerId;
 
-	public Double getTotal() {
-		return total;
-	}
-
-	public void setTotal(Double total) {
-		this.total = total;
-	}
-
-	public LocalDate getMinCreatedOn() {
-		return minCreatedOn;
+	public BigDecimal getTotal() {
+		return minTotal;
 	}
 
 	public void setMinCreatedOn(LocalDate minCreatedOn) {
@@ -47,24 +46,44 @@ public class RecordFilter {
 		return productsId;
 	}
 
+	public LocalDate getMinCreatedOn() {
+		return minCreatedOn;
+	}
+
 	public void setProductsId(List<Long> productsId) {
 		this.productsId = productsId;
 	}
 
-	public Long getAccountId() {
+	public List<Long> getAccountId() {
 		return accountId;
 	}
 
-	public void setAccountId(Long accountId) {
+	public void setAccountId(List<Long> accountId) {
 		this.accountId = accountId;
 	}
 
-	public Long getCustomerId() {
+	public List<Long> getCustomerId() {
 		return customerId;
 	}
 
-	public void setCustomerId(Long customerId) {
+	public void setCustomerId(List<Long> customerId) {
 		this.customerId = customerId;
+	}
+
+	public BigDecimal getMinTotal() {
+		return minTotal;
+	}
+
+	public void setMinTotal(BigDecimal minTotal) {
+		this.minTotal = minTotal;
+	}
+
+	public BigDecimal getMaxTotal() {
+		return maxTotal;
+	}
+
+	public void setMaxTotal(BigDecimal maxTotal) {
+		this.maxTotal = maxTotal;
 	}
 	
 	

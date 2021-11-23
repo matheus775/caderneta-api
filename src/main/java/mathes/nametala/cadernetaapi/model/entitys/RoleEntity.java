@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.junit.platform.commons.util.ToStringBuilder;
+
 
 @Entity
 @Table(name="roles")
@@ -35,6 +37,11 @@ public class RoleEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@Override
+	public String toString() {
+		return "{\"id\":"+this.id+",\"name\":\""+this.name+"\"}";
 	}
 	
 }

@@ -1,5 +1,6 @@
 package mathes.nametala.cadernetaapi.model.entitys;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -13,6 +14,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 
 @Entity
 @Table(name= "record")
@@ -23,8 +26,10 @@ public class RecordEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	@Digits( fraction=2, integer = 100)
+	@DecimalMin(value = "0.0")
 	@Column(name="total_value")
-	private Double totasl; 
+	private BigDecimal total; 
 	
 	@Column(name="created_on")
 	private LocalDate createdOn; 
@@ -53,12 +58,12 @@ public class RecordEntity {
 		this.id = id;
 	}
 
-	public Double getTotasl() {
-		return totasl;
+	public BigDecimal getTotal() {
+		return total;
 	}
 
-	public void setTotasl(Double totasl) {
-		this.totasl = totasl;
+	public void setTotal(BigDecimal totasl) {
+		this.total = totasl;
 	}
 
 	public LocalDate getCreatedOn() {
@@ -91,6 +96,19 @@ public class RecordEntity {
 
 	public void setCustomer(CustomerEntity customer) {
 		this.customer = customer;
+	}
+
+	@Override
+	public String toString() {
+		String result = "{\"id\":"+this.id+ ",\"total\":"+this.total+",\"createdOn\":\""+this.createdOn+"\",\"products\":[";
+		for(ProductEntity p :this.products) 
+			result=result+p.toString()+",";
+		result = result.substring(0, result.length()-1);
+		
+		result=result+"],\"account\":"+this.account.toString()+","
+				+ "\"customer\":"+this.customer.toString()+"}";
+		
+		return result;
 	}
 	
 }

@@ -10,12 +10,10 @@ import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
 
 public interface RecordService {
 
-	public List<RecordEntity> getByUserId(Long userId);
-	public List<RecordEntity> getByCustomerId(Long customerId);
 	public RecordEntity getRecord(Long id);
-	public void newRecord(RecordEntity record);
+	public RecordEntity newRecord(RecordEntity record);
 	public void delRecord(Long id);
-	public void uptdRecord(RecordEntity record, Long id);
+	public RecordEntity uptdRecord(RecordEntity record, Long id);
 	public Page<RecordEntity> getRecords(Pageable pageable, RecordFilter recordFilter);
 		
 }

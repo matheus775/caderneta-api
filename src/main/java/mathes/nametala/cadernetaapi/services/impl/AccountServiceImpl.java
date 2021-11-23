@@ -40,11 +40,7 @@ public class AccountServiceImpl implements AccountService{
 
 	@Override
 	public AccountEntity newAccount(AccountEntity account) {
-		for(RoleEntity role: account.getRoles()) {
-			if(roleRepository.findById(role.getId()).isEmpty())
-				throw new IdNotFoundException(role.getId(), RoleEntity.class);
-			
-		};
+		this.verifyRoleId(account);
 		return accountRepositoy.save(account);
 	}
 
@@ -56,10 +52,9 @@ public class AccountServiceImpl implements AccountService{
 	@Override
 	public  AccountEntity  updtAccount(AccountEntity account,Long id) {
 		AccountEntity accountdB = accountRepositoy.findById(id).get();
-		for(RoleEntity role: account.getRoles()) {
-			if(roleRepository.findById(role.getId()).isEmpty())
-				throw new IdNotFoundException(role.getId(), RoleEntity.class);
-		};
+		
+		this.verifyRoleId(accountdB);
+		
 		accountdB.setUsername(account.getUsername());
 		accountdB.setEmail(account.getEmail());
 		accountdB.setPassword(account.getPassword());
@@ -67,6 +62,12 @@ public class AccountServiceImpl implements AccountService{
 		return accountRepositoy.save(accountdB);
 	}
 
+	public void verifyRoleId(AccountEntity account) {
+		for(RoleEntity role: account.getRoles()) {
+			if(roleRepository.findById(role.getId()).isEmpty())
+				throw new IdNotFoundException(role.getId(), RoleEntity.class);
+		};
+	}
 
 	
 }

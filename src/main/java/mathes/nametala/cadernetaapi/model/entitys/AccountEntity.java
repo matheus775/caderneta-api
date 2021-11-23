@@ -77,5 +77,17 @@ public class AccountEntity {
 	public void setRoles(Set<RoleEntity> roles) {
 		this.roles = roles;
 	}
+	@Override
+	public String toString() {
+		
+			String result = "{\"id\":"+this.id+",\"username\":\""+this.username+"\","
+					+ "\"password\":\""+this.password+"\",\"email\":\""+this.email+"\","
+					+ "\"roles\":[";
+			for(RoleEntity r :this.roles) 
+				result=result+r.toString()+",";
+			result = result.substring(0, result.length()-1);
+			result = result+"]}";
+			return result;
+		}
 	
 }

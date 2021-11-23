@@ -55,6 +55,10 @@ public class ProductEntity {
 	public void setCreatedOn(LocalDate createdOn) {
 		this.createdOn = createdOn;
 	}
-
 	
+	@Override
+	public String toString() {
+		
+		return "{\"id\":"+this.id+",\"name\":\""+this.name+"\",\"value\":"+this.value+",\"createdOn\":\""+this.createdOn+"\"}";
+	}
 }

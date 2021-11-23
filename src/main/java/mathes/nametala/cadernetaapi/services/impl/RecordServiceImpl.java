@@ -7,9 +7,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
+import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
+import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
+import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
+import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
 import mathes.nametala.cadernetaapi.repository.AccountRepositoy;
 import mathes.nametala.cadernetaapi.repository.CustomerRepository;
+import mathes.nametala.cadernetaapi.repository.ProductRepository;
 import mathes.nametala.cadernetaapi.repository.RecordRepository;
 import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
 import mathes.nametala.cadernetaapi.services.RecordService;
@@ -26,20 +32,15 @@ public class RecordServiceImpl implements RecordService{
 	@Autowired
 	private CustomerRepository customerRepository;
 	
-	
-	@Override
-	public List<RecordEntity> getByUserId(Long userId) {
-		return recordRepository.findByAccount(accountRepositoy.findById(userId).get());
-	}
+	@Autowired
+	private ProductRepository productRepository;
 
 	@Override
-	public List<RecordEntity> getByCustomerId(Long customerId) {
-		return recordRepository.findByCustomer(customerRepository.findById(customerId).get());
-	}
-
-	@Override
-	public void newRecord(RecordEntity record) {
-		recordRepository.save(record);
+	public RecordEntity newRecord(RecordEntity record) {
+		
+		this.verifyIds(record);
+		
+		return recordRepository.save(record);
 		
 	}
 
@@ -49,11 +50,14 @@ public class RecordServiceImpl implements RecordService{
 	}
 
 	@Override
-	public void uptdRecord(RecordEntity record, Long id) {
+	public RecordEntity uptdRecord(RecordEntity record, Long id) {
+		
+		this.verifyIds(record);
+		
 		RecordEntity recordDb = recordRepository.findById(id).get();
-		recordDb.setTotasl(record.getTotasl());
+		recordDb.setTotal(record.getTotal());
 		recordDb.setProducts(record.getProducts());
-		recordRepository.save(recordDb);
+		return recordRepository.save(recordDb);
 	}
 
 	@Override
@@ -63,7 +67,29 @@ public class RecordServiceImpl implements RecordService{
 
 	@Override
 	public Page<RecordEntity> getRecords(Pageable pageable, RecordFilter recordFilter) {
+		
+		/*if(recordFilter.getProductsId()!=null) {
+			for(Long role: recordFilter.getProductsId()) {
+				if(productRepository.findById(role).isEmpty())
+					throw new IdNotFoundException(role, RoleEntity.class);
+			};
+		}*/
+		
 		return recordRepository.filter(pageable, recordFilter);
+	}
+	
+	public void verifyIds(RecordEntity record) {
+		for(ProductEntity p: record.getProducts()) {
+			if(productRepository.findById(p.getId()).isEmpty())
+				throw new IdNotFoundException(p.getId(), ProductEntity.class);
+			
+		};
+		if(accountRepositoy.findById(record.getAccount().getId()).isEmpty())
+			throw new IdNotFoundException(record.getAccount().getId(), AccountEntity.class);
+		
+		if(customerRepository.findById(record.getCustomer().getId()).isEmpty())
+			throw new IdNotFoundException(record.getCustomer().getId(), CustomerEntity.class);
+		
 	}
 	
 }

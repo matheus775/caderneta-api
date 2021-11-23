@@ -11,7 +11,7 @@ CREATE TABLE customer(
 CREATE TABLE product (
 	product_id serial PRIMARY KEY,
 	product_name VARCHAR ( 50 ) NOT NULL,
-	value DECIMAL ( 50 ) NOT NULL,
+	value DECIMAL NOT NULL,
 	created_on DATE NOT NULL 
 );   
 
@@ -19,7 +19,7 @@ CREATE TABLE record (
 	record_id serial PRIMARY KEY,
 	user_id INT NOT NULL,
 	customer_id INT NOT NULL,
-	total_value VARCHAR ( 50 ) NOT NULL,
+	total_value DECIMAL NOT NULL,
 	created_on DATE NOT NULL,
 	FOREIGN KEY (user_id)
             REFERENCES accounts (user_id),
