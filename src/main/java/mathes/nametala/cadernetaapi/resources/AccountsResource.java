@@ -64,7 +64,7 @@ public class AccountsResource {
 	
 	@PutMapping("/{userId}")
 	@PreAuthorize("anyAuthority")
-	public  ResponseEntity<AccountEntity>  updtAccount(@PathVariable Long userId,@Valid @RequestBody AccountEntity account, HttpServletResponse response) {
+	public  ResponseEntity<AccountEntity>  updtAccount(@Valid @RequestBody AccountEntity account,@PathVariable Long userId, HttpServletResponse response) {
 		AccountEntity changedAccount = accountService.updtAccount(account, userId);
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedAccount.getId()));
 		return ResponseEntity.status(HttpStatus.OK).body(changedAccount);

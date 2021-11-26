@@ -16,6 +16,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.NotFound;
+
 @Entity
 @Table(name="accounts")
 public class AccountEntity {
@@ -36,7 +38,7 @@ public class AccountEntity {
 	@Email
 	private String email;
 	
-	@NotNull
+	@NotFound
 	@NotEmpty
 	@ManyToMany
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
