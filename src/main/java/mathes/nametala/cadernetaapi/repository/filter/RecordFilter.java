@@ -8,8 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class RecordFilter {
 
-	
-
 	private BigDecimal minTotal; 
 	
 	private BigDecimal maxTotal;

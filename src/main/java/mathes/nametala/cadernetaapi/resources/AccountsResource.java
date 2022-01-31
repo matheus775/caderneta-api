@@ -48,7 +48,7 @@ public class AccountsResource {
 	}
 	
 	@PostMapping
-	@PreAuthorize("anyAuthority()")
+	@PreAuthorize("hasAutority(Administrador,Gerente)")
 	public ResponseEntity<AccountEntity> newAccount(@Valid @RequestBody AccountEntity account, HttpServletResponse response) {
 		AccountEntity newAccount =  accountService.newAccount(account);
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, newAccount.getId()));
@@ -63,7 +63,7 @@ public class AccountsResource {
 	}
 	
 	@PutMapping("/{userId}")
-	@PreAuthorize("anyAuthority")
+	@PreAuthorize("hasAutority(Administrador,Gerente)")
 	public  ResponseEntity<AccountEntity>  updtAccount(@Valid @RequestBody AccountEntity account,@PathVariable Long userId, HttpServletResponse response) {
 		AccountEntity changedAccount = accountService.updtAccount(account, userId);
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedAccount.getId()));

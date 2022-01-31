@@ -56,7 +56,7 @@ public class CustomerResource {
 	@PostMapping
 	@PreAuthorize("anyAuthority()")
 	public ResponseEntity<CustomerEntity> newCustomer(@Valid @RequestBody CustomerEntity customer, HttpServletResponse response) {
-		CustomerEntity newCustomer = customerService.newCustomer(null);
+		CustomerEntity newCustomer = customerService.newCustomer(customer);
 		
 		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, newCustomer.getId()));
 		

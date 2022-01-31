@@ -8,8 +8,6 @@ public class CustomerFilter {
 	
 	private String adress;
 
-	
-	
 	public CustomerFilter(String name, String email, String adress) {
 		super();
 		this.name = name;

@@ -35,9 +35,7 @@ import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
 import mathes.nametala.cadernetaapi.resources.ProductResource;
 import mathes.nametala.cadernetaapi.services.ProductService;
 
-@WebMvcTest(
-		controllers = ProductResource.class
-)
+@WebMvcTest(controllers = ProductResource.class)
 @ContextConfiguration(classes = {(ProductResource.class),(apiResponseEntityExceptionHandler.class)})
 public class ProductResourceTest {
 

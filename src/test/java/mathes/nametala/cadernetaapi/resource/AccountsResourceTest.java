@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
@@ -36,7 +35,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import mathes.nametala.cadernetaapi.exceptionhandler.apiResponseEntityExceptionHandler;
 import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
-import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
 import mathes.nametala.cadernetaapi.repository.filter.AccountFilter;
 import mathes.nametala.cadernetaapi.resources.AccountsResource;

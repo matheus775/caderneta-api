@@ -15,7 +15,6 @@ import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,7 +27,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,11 +37,8 @@ import mathes.nametala.cadernetaapi.repository.filter.CustomerFilter;
 import mathes.nametala.cadernetaapi.resources.CustomerResource;
 import mathes.nametala.cadernetaapi.services.CustomerService;
 
-@WebMvcTest(
-		controllers = CustomerResource.class
-)
+@WebMvcTest(controllers = CustomerResource.class)
 @ContextConfiguration(classes = {(CustomerResource.class),(apiResponseEntityExceptionHandler.class)})
-@RunWith(SpringJUnit4ClassRunner.class)
 public class CustomerResourceTests {
 	
 	@MockBean

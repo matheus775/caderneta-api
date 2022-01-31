@@ -1,6 +1,7 @@
 package mathes.nametala.cadernetaapi.services.impl;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,7 +13,6 @@ import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
-import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
 import mathes.nametala.cadernetaapi.repository.AccountRepositoy;
 import mathes.nametala.cadernetaapi.repository.CustomerRepository;
 import mathes.nametala.cadernetaapi.repository.ProductRepository;
@@ -40,6 +40,10 @@ public class RecordServiceImpl implements RecordService{
 		
 		this.verifyIds(record);
 		
+		record.setCreatedOn(LocalDate.now());
+		record.setTotal( new BigDecimal(
+				record.getProducts().stream().mapToDouble(p->productRepository.getById(p.getId()).getValue()).sum()
+				)) ;
 		return recordRepository.save(record);
 		
 	}
@@ -55,7 +59,9 @@ public class RecordServiceImpl implements RecordService{
 		this.verifyIds(record);
 		
 		RecordEntity recordDb = recordRepository.findById(id).get();
-		recordDb.setTotal(record.getTotal());
+		recordDb.setTotal(
+				new BigDecimal(record.getProducts().stream().mapToDouble(p->p.getValue()).sum()
+				));
 		recordDb.setProducts(record.getProducts());
 		return recordRepository.save(recordDb);
 	}
@@ -68,14 +74,8 @@ public class RecordServiceImpl implements RecordService{
 	@Override
 	public Page<RecordEntity> getRecords(Pageable pageable, RecordFilter recordFilter) {
 		
-		/*if(recordFilter.getProductsId()!=null) {
-			for(Long role: recordFilter.getProductsId()) {
-				if(productRepository.findById(role).isEmpty())
-					throw new IdNotFoundException(role, RoleEntity.class);
-			};
-		}*/
-		
 		return recordRepository.filter(pageable, recordFilter);
+	
 	}
 	
 	public void verifyIds(RecordEntity record) {

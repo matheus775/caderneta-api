@@ -31,9 +31,9 @@ public class CustomerServiceImpl implements CustomerService{
 
 	@Override
 	public CustomerEntity getCustomerByCpf(String cpf) {
-		List<CustomerEntity>  a = customerRepository.findByCpf(cpf);
-		if(a.isEmpty()) throw new CpfNotFoundException(cpf, CustomerEntity.class);
-		return a.get(0);
+		List<CustomerEntity>  customer = customerRepository.findByCpf(cpf);
+		if(customer.isEmpty()) throw new CpfNotFoundException(cpf, CustomerEntity.class);
+		return customer.get(0);
 	}
 	
 	@Override

@@ -1,5 +1,7 @@
 package mathes.nametala.cadernetaapi.services.impl;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,18 +24,19 @@ public class ProductServiceImpl implements ProductService{
 	}
 
 	@Override
+	public ProductEntity getProduct(Long id) {
+		ProductEntity a = productRepository.findById(id).get();
+		return a;
+	}
+	@Override
 	public void delProduct(Long id) {
 		productRepository.deleteById(id);
 	}
 
 	@Override
 	public ProductEntity newProduct(ProductEntity product) {
+		product.setCreatedOn(LocalDate.now());
 		return productRepository.save(product);
-	}
-
-	@Override
-	public ProductEntity getProduct(Long id) {
-		return productRepository.getById(id);
 	}
 
 }
