@@ -1,4 +1,4 @@
-package mathes.nametala.cadernetaapi.service;
+package mathes.nametala.cadernetaapi.services;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;

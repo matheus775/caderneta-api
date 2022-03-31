@@ -1,4 +1,4 @@
-package mathes.nametala.cadernetaapi.resource;
+package mathes.nametala.cadernetaapi.resources;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -38,7 +38,6 @@ import mathes.nametala.cadernetaapi.exceptionhandler.apiResponseEntityExceptionH
 import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
 import mathes.nametala.cadernetaapi.repository.filter.AccountFilter;
-import mathes.nametala.cadernetaapi.resources.AccountsResource;
 import mathes.nametala.cadernetaapi.services.AccountService;
 
 @WebMvcTest(controllers = AccountsResource.class)
@@ -249,9 +248,9 @@ public class AccountsResourceTest {
 	@Test
 	@WithMockUser
 	public void putRecord_nonExistentId_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
-		
+
 		when(accountService.updtAccount(account, 0L)).thenThrow(NoSuchElementException.class);
 
 		mockMvc.perform(put("/accounts/{id}", 0L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)

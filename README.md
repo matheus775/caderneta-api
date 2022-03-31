@@ -1,2 +1,2 @@
 # caderneta-api
-link para biblioteca para o Postman : https://drive.google.com/file/d/18rn9ldROq7Mb4CdZN6tn9vc60Engr36h/view?usp=sharing
+link para biblioteca para o Postman : https://drive.google.com/file/d/1Kd1HYGQnwBBG5q_OcXFgWaEBAi5QhzSq/view?usp=sharing
