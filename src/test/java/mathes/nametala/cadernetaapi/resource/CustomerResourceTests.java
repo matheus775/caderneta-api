@@ -184,8 +184,10 @@ public class CustomerResourceTests {
 	public void postCustomer_correctData_OK() throws Exception {
 		
 		CustomerEntity expectedResult = this.createMockedcCustomerEntity();
+		CustomerEntity customer = this.createMockedcCustomerEntity();
+		customer.setId(null);
 		
-		when(customerService.newCustomer(Mockito.any()))
+		when(customerService.newCustomer(customer))
 		.thenReturn(expectedResult);
 		
 		ResultActions resultActions = mockMvc.perform(
@@ -193,13 +195,13 @@ public class CustomerResourceTests {
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedcCustomerEntity().toString()))
+					.content(customer.toString()))
 				.andExpect(status().isCreated());
 		
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
 		
-		Mockito.verify(customerService,times(1)).newCustomer(Mockito.any());
+		Mockito.verify(customerService,times(1)).newCustomer(customer);
 	}
 	
 	@Test
@@ -217,7 +219,7 @@ public class CustomerResourceTests {
 					.content(customer.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(customerService,times(0)).newCustomer(Mockito.any());
+		Mockito.verify(customerService,times(0)).newCustomer(customer);
 	}
 	
 	@Test
@@ -235,7 +237,7 @@ public class CustomerResourceTests {
 					.content(customer.toString()))
 				.andExpect(status().isBadRequest());	
 		
-		Mockito.verify(customerService,times(0)).newCustomer(Mockito.any());
+		Mockito.verify(customerService,times(0)).newCustomer(customer);
 	}
 	
 	@Test
@@ -253,7 +255,7 @@ public class CustomerResourceTests {
 					.content(customer.toString()))
 				.andExpect(status().isBadRequest());	
 
-		Mockito.verify(customerService,times(0)).newCustomer(Mockito.any());
+		Mockito.verify(customerService,times(0)).newCustomer(customer);
 		
 	}
 	
@@ -262,8 +264,10 @@ public class CustomerResourceTests {
 	public void putCustomer_correctData_OK() throws Exception {
 		
 		CustomerEntity expectedResult = this.createMockedcCustomerEntity();
+		CustomerEntity customer = this.createMockedcCustomerEntity();
+		customer.setName("New Name");
 		
-		when(customerService.uptdCustomer(Mockito.any(),Mockito.any()))
+		when(customerService.uptdCustomer(customer, 2L))
 		.thenReturn(expectedResult);
 		
 		ResultActions resultActions = mockMvc.perform(
@@ -271,21 +275,23 @@ public class CustomerResourceTests {
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedcCustomerEntity().toString()))
+					.content(customer.toString()))
 				.andExpect(status().isOk());
 		
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
 		
-		Mockito.verify(customerService,times(1)).uptdCustomer(Mockito.any(), Mockito.any());
+		Mockito.verify(customerService,times(1)).uptdCustomer(customer, 2L);
 		
 	}
 	
 	@Test
 	@WithMockUser
 	public void putCustomer_nonexistentID_NOT_FOUND() throws Exception {
-	
-		when(customerService.uptdCustomer(Mockito.any(),Mockito.any()))
+		
+		CustomerEntity customer = this.createMockedcCustomerEntity();
+		
+		when(customerService.uptdCustomer(customer,0L))
 		.thenThrow(NoSuchElementException.class);
 		
 		mockMvc.perform(
@@ -293,10 +299,10 @@ public class CustomerResourceTests {
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedcCustomerEntity().toString()))
+					.content(customer.toString()))
 				.andExpect(status().isNotFound());
 		
-		Mockito.verify(customerService,times(1)).uptdCustomer(Mockito.any(), Mockito.any());
+		Mockito.verify(customerService,times(1)).uptdCustomer(customer,0L);
 		
 	}
 	
@@ -315,7 +321,7 @@ public class CustomerResourceTests {
 					.content(customer.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(customerService,times(0)).uptdCustomer(Mockito.any(), Mockito.any());
+		Mockito.verify(customerService,times(0)).uptdCustomer(customer,2L);
 		
 	}
 	
@@ -334,7 +340,7 @@ public class CustomerResourceTests {
 					.content(customer.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(customerService,times(0)).uptdCustomer(Mockito.any(), Mockito.any());
+		Mockito.verify(customerService,times(0)).uptdCustomer(customer,2L);
 		
 	}
 	
@@ -353,7 +359,7 @@ public class CustomerResourceTests {
 					.content(customer.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(customerService,times(0)).uptdCustomer(Mockito.any(), Mockito.any());
+		Mockito.verify(customerService,times(0)).uptdCustomer(customer,2L);
 		
 	}
 	

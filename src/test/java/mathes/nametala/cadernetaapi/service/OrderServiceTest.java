@@ -28,25 +28,25 @@ import org.springframework.test.context.junit4.SpringRunner;
 import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
 import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
+import mathes.nametala.cadernetaapi.model.entitys.OrderEntity;
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
-import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
 import mathes.nametala.cadernetaapi.repository.AccountRepositoy;
 import mathes.nametala.cadernetaapi.repository.CustomerRepository;
+import mathes.nametala.cadernetaapi.repository.OrderRepository;
 import mathes.nametala.cadernetaapi.repository.ProductRepository;
-import mathes.nametala.cadernetaapi.repository.RecordRepository;
-import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
-import mathes.nametala.cadernetaapi.services.impl.RecordServiceImpl;
+import mathes.nametala.cadernetaapi.repository.filter.OrderFilter;
+import mathes.nametala.cadernetaapi.services.impl.OrderServiceImpl;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class RecordServiceTest {
+public class OrderServiceTest {
 	
 	@Autowired
-	private RecordServiceImpl recordService;
+	private OrderServiceImpl orderService;
 	
 	@MockBean
-	private RecordRepository recordRepository;
+	private OrderRepository orderRepository;
 	
 	@MockBean
 	private AccountRepositoy accountRepositoy;
@@ -61,7 +61,7 @@ public class RecordServiceTest {
 	private Pageable pageable;
 	
 	@MockBean
-	private RecordFilter recordFilter;
+	private OrderFilter orderFilter;
 	
 	public Optional<RoleEntity> createMockedRole() {
 		RoleEntity role = new RoleEntity();
@@ -104,17 +104,17 @@ public class RecordServiceTest {
 		return Optional.of(customer);
 	}
 	
-	public Optional<RecordEntity> creatMockedRecordEntity(){
-		RecordEntity record = new RecordEntity();
-		record.setId(1L);
-		record.setAccount(this.createMockedAccountEntity().get());
-		record.setCustomer(this.createMockedCustomerEntity().get());
+	public Optional<OrderEntity> creatMockedOrderEntity(){
+		OrderEntity order = new OrderEntity();
+		order.setId(1L);
+		order.setAccount(this.createMockedAccountEntity().get());
+		order.setCustomer(this.createMockedCustomerEntity().get());
 		Set<ProductEntity> products = new HashSet<>();
 		products.add(this.createMockedProduct().get());
-		record.setProducts(products);
-		record.setTotal(new BigDecimal(120.5));
-		record.setCreatedOn(LocalDate.of(2021, 12, 7));
-		return Optional.of(record);
+		order.setProducts(products);
+		order.setTotal(new BigDecimal(120.5));
+		order.setCreatedOn(LocalDate.of(2021, 12, 7));
+		return Optional.of(order);
 	}
 	
 	public Pageable createPageable() {
@@ -122,174 +122,174 @@ public class RecordServiceTest {
 	}
 	
 	@Test
-	public void getRecordsTest() {
+	public void getOrdersTest() {
 		
-		Mockito.when(recordRepository.filter(Mockito.any(), Mockito.any())).thenReturn(new PageImpl<RecordEntity>(new ArrayList<>()));
+		Mockito.when(orderRepository.filter(Mockito.any(), Mockito.any())).thenReturn(new PageImpl<OrderEntity>(new ArrayList<>()));
 		
-		recordService.getRecords(this.createPageable(), recordFilter);
+		orderService.getOrders(this.createPageable(), orderFilter);
 		
-		Mockito.verify(recordRepository,times(1)).filter(Mockito.any(), Mockito.any());
+		Mockito.verify(orderRepository,times(1)).filter(Mockito.any(), Mockito.any());
 	}
 	
 	@Test
-	public void getRecord_Success() {
+	public void getOrder_Success() {
 		
-		RecordEntity expectedResult = this.creatMockedRecordEntity().get();
+		OrderEntity expectedResult = this.creatMockedOrderEntity().get();
 		
-		Mockito.when(recordRepository.findById(1L)).thenReturn(this.creatMockedRecordEntity());
+		Mockito.when(orderRepository.findById(1L)).thenReturn(this.creatMockedOrderEntity());
 		
-		RecordEntity result = recordService.getRecord(1L);
+		OrderEntity result = orderService.getOrder(1L);
 		
-		Mockito.verify(recordRepository,times(1)).findById(1L);
+		Mockito.verify(orderRepository,times(1)).findById(1L);
 		
 		Assertions.assertEquals(result.toString(), expectedResult.toString());
 		
 	}
 	
 	@Test
-	public void getRecord_Fail() {
+	public void getOrder_Fail() {
 		
-		Mockito.when(recordRepository.findById(0L)).thenThrow(NoSuchElementException.class);
+		Mockito.when(orderRepository.findById(0L)).thenThrow(NoSuchElementException.class);
 		
 	    Assertions.assertThrows(NoSuchElementException.class, () -> {
-	        recordRepository.findById(0L);
+	        orderRepository.findById(0L);
 	    });
 		
-		Mockito.verify(recordRepository,times(1)).findById(0L);
+		Mockito.verify(orderRepository,times(1)).findById(0L);
 		
 	}
 	
 	@Test
-	public void newRecord_Success() {
+	public void newOrder_Success() {
 		
-		RecordEntity expectedResult = this.creatMockedRecordEntity().get();
-		RecordEntity newRecord = expectedResult;
-		newRecord.setId(null);
+		OrderEntity expectedResult = this.creatMockedOrderEntity().get();
+		OrderEntity newOrder = expectedResult;
+		newOrder.setId(null);
 		
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
-		doNothing().when(spy).verifyIds(newRecord);
-		Mockito.when(recordRepository.save(newRecord)).thenReturn(expectedResult);
+		doNothing().when(spy).verifyIds(newOrder);
+		Mockito.when(orderRepository.save(newOrder)).thenReturn(expectedResult);
 		
 		Mockito.when(productRepository.getById(1L)).thenReturn(this.createMockedProduct().get());
 		
-		RecordEntity result = spy.newRecord(newRecord);
+		OrderEntity result = spy.newOrder(newOrder);
 		
-		Mockito.verify(recordRepository,times(1)).save(newRecord);
+		Mockito.verify(orderRepository,times(1)).save(newOrder);
 		Assertions.assertEquals(result.toString(), expectedResult.toString());	
 	}
 	
 	@Test
-	public void newRecord_Fail() {
+	public void newOrder_Fail() {
 		
-		RecordEntity newRecord = this.creatMockedRecordEntity().get();
-		newRecord.setId(null);
+		OrderEntity newOrder = this.creatMockedOrderEntity().get();
+		newOrder.setId(null);
 		
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
-		doThrow(IdNotFoundException.class).when(spy).verifyIds(newRecord);
+		doThrow(IdNotFoundException.class).when(spy).verifyIds(newOrder);
 	    
 		Assertions.assertThrows(IdNotFoundException.class, () -> {
-			spy.newRecord(newRecord);
+			spy.newOrder(newOrder);
 	    });
 		
 		
 		
-		Mockito.verify(recordRepository,times(0)).save(newRecord);
+		Mockito.verify(orderRepository,times(0)).save(newOrder);
 		
 	}
 	
 	@Test
-	public void delRecordTest() {
+	public void delOrderTest() {
 		
-		doNothing().when(recordRepository).deleteById(1L);
+		doNothing().when(orderRepository).deleteById(1L);
 		
-		recordService.delRecord(1L);
+		orderService.delOrder(1L);
 		
-		Mockito.verify(recordRepository,times(1)).deleteById(1L);
+		Mockito.verify(orderRepository,times(1)).deleteById(1L);
 		
 	}
 	
 	@Test
-	public void delRecordTest_Fail() {
+	public void delOrderTest_Fail() {
 		
-		doThrow(NoSuchElementException.class).when(recordRepository).deleteById(0L);
+		doThrow(NoSuchElementException.class).when(orderRepository).deleteById(0L);
 		
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			recordService.delRecord(0L);
+			orderService.delOrder(0L);
 	    });
 		
-		Mockito.verify(recordRepository,times(1)).deleteById(0L);
+		Mockito.verify(orderRepository,times(1)).deleteById(0L);
 		
 	}
 	
 	@Test
-	public void updtRecord_Success() {
+	public void updtOrder_Success() {
 		
-		RecordEntity expectedResult = this.creatMockedRecordEntity().get();
+		OrderEntity expectedResult = this.creatMockedOrderEntity().get();
 		expectedResult.setTotal(new BigDecimal(200));
 		
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		doNothing().when(spy).verifyIds(expectedResult);
-		Mockito.when(recordRepository.findById(1L)).thenReturn(this.creatMockedRecordEntity());
-		Mockito.when(recordRepository.save(Mockito.any())).thenReturn(expectedResult);
+		Mockito.when(orderRepository.findById(1L)).thenReturn(this.creatMockedOrderEntity());
+		Mockito.when(orderRepository.save(Mockito.any())).thenReturn(expectedResult);
 		
-		RecordEntity result = spy.uptdRecord(expectedResult, 1L);
-		Mockito.verify(recordRepository,times(1)).save(Mockito.any());
+		OrderEntity result = spy.uptdOrder(expectedResult, 1L);
+		Mockito.verify(orderRepository,times(1)).save(Mockito.any());
 		Assertions.assertEquals(result.toString(), expectedResult.toString());
 		
 	}
 	
 	@Test
-	public void updtRecord_RecordIdNotFound_Fail() {
+	public void updtOrder_OrderIdNotFound_Fail() {
 		
-		RecordEntity account = this.creatMockedRecordEntity().get();
+		OrderEntity account = this.creatMockedOrderEntity().get();
 		
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		doNothing().when(spy).verifyIds(Mockito.any());
-		Mockito.when(recordRepository.findById(0L)).thenThrow(NoSuchElementException.class);
+		Mockito.when(orderRepository.findById(0L)).thenThrow(NoSuchElementException.class);
 	    
 		Assertions.assertThrows(NoSuchElementException.class, () -> {
-			spy.uptdRecord(account, 0L);
+			spy.uptdOrder(account, 0L);
 	    });
 		
-		Mockito.verify(recordRepository,times(0)).save(Mockito.any());
+		Mockito.verify(orderRepository,times(0)).save(Mockito.any());
 		
 	}
 	
 	@Test
-	public void updtRecord_ForeignIdNotFound_Fail() {
+	public void updtOrder_ForeignIdNotFound_Fail() {
 		
-		RecordEntity account = this.creatMockedRecordEntity().get();
+		OrderEntity account = this.creatMockedOrderEntity().get();
 		
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		doThrow(IdNotFoundException.class).when(spy).verifyIds(Mockito.any());
-		Mockito.when(recordRepository.findById(1L)).thenReturn(this.creatMockedRecordEntity());
+		Mockito.when(orderRepository.findById(1L)).thenReturn(this.creatMockedOrderEntity());
 		
 		
 		Assertions.assertThrows(IdNotFoundException.class, () -> {
-			spy.uptdRecord(account, 1L);
+			spy.uptdOrder(account, 1L);
 	    });
 		
 		
 		
-		Mockito.verify(recordRepository,times(0)).save(Mockito.any());
+		Mockito.verify(orderRepository,times(0)).save(Mockito.any());
 		
 	}
 	
 	@Test
 	public void verifyIds_Sucess() {
-		RecordEntity record = this.creatMockedRecordEntity().get();
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderEntity order = this.creatMockedOrderEntity().get();
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		when(productRepository.findById(1L)).thenReturn(this.createMockedProduct());
 		when(accountRepositoy.findById(1L)).thenReturn(this.createMockedAccountEntity());
 		when(customerRepository.findById(1L)).thenReturn(this.createMockedCustomerEntity());
 		
-		spy.verifyIds(record);
+		spy.verifyIds(order);
 		
 		Mockito.verify(productRepository,atLeast(1)).findById(Mockito.any());
 		Mockito.verify(accountRepositoy,times(1)).findById(Mockito.any());
@@ -299,13 +299,13 @@ public class RecordServiceTest {
 	@Test
 	public void verifyIds_ProductIdNotFound_Fail() {
 		
-		RecordEntity record = this.creatMockedRecordEntity().get();
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderEntity order = this.creatMockedOrderEntity().get();
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		when(productRepository.findById(1L)).thenReturn(Optional.empty());
 		
 		Assertions.assertThrows(IdNotFoundException.class, () -> {
-			spy.verifyIds(record);
+			spy.verifyIds(order);
 	    });
 		
 		Mockito.verify(productRepository,atLeast(1)).findById(Mockito.any());
@@ -314,14 +314,14 @@ public class RecordServiceTest {
 	@Test
 	public void verifyIds_AccountIdNotFound_Fail() {
 		
-		RecordEntity record = this.creatMockedRecordEntity().get();
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderEntity order = this.creatMockedOrderEntity().get();
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		when(productRepository.findById(1L)).thenReturn(this.createMockedProduct());
 		when(accountRepositoy.findById(1L)).thenReturn(Optional.empty());
 		
 		Assertions.assertThrows(IdNotFoundException.class, () -> {
-			spy.verifyIds(record);
+			spy.verifyIds(order);
 	    });
 		
 		Mockito.verify(productRepository,atLeast(1)).findById(Mockito.any());
@@ -330,15 +330,15 @@ public class RecordServiceTest {
 	
 	@Test
 	public void verifyIds_CustomerIdNotFound_Fail() {
-		RecordEntity record = this.creatMockedRecordEntity().get();
-		RecordServiceImpl spy = Mockito.spy(recordService);
+		OrderEntity order = this.creatMockedOrderEntity().get();
+		OrderServiceImpl spy = Mockito.spy(orderService);
 		
 		when(productRepository.findById(1L)).thenReturn(this.createMockedProduct());
 		when(accountRepositoy.findById(1L)).thenReturn(this.createMockedAccountEntity());
 		when(customerRepository.findById(1L)).thenReturn(Optional.empty());
 		
 		Assertions.assertThrows(IdNotFoundException.class, () -> {
-			spy.verifyIds(record);
+			spy.verifyIds(order);
 	    });
 		
 		Mockito.verify(productRepository,atLeast(1)).findById(Mockito.any());

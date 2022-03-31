@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class RecordFilter {
+public class OrderFilter {
 
 	private BigDecimal minTotal; 
 	

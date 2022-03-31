@@ -2,6 +2,7 @@ package mathes.nametala.cadernetaapi.model.entitys;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -18,11 +19,11 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 
 @Entity
-@Table(name= "record")
-public class RecordEntity {
+@Table(name= "orders")
+public class OrderEntity {
 
 	@Id
-	@Column(name="record_id")
+	@Column(name="order_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
@@ -37,8 +38,8 @@ public class RecordEntity {
 	@ManyToMany
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@JoinTable(
-			  name = "product_record", 
-			  joinColumns = @JoinColumn(name = "record_id"), 
+			  name = "products_orders", 
+			  joinColumns = @JoinColumn(name = "order_id"), 
 			  inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private Set<ProductEntity> products;
 	
@@ -111,4 +112,21 @@ public class RecordEntity {
 		return result;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+
+		if (o == this)
+			return true;
+
+		if (!(o instanceof OrderEntity))
+			return false;
+
+		OrderEntity c = (OrderEntity) o;
+
+		return Objects.equals(c.getId(), this.id)
+				&& Objects.equals(c.getTotal(), this.getTotal())
+				&& Objects.equals(c.getAccount(), this.getAccount())
+				&& Objects.equals(c.getCustomer(), this.getCustomer())
+				&& Objects.equals(c.getTotal(), this.getTotal());
+	}
 }

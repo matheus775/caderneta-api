@@ -89,20 +89,23 @@ public class AccountServiceTest {
 	}
 	
 	@Test
-	public void getAccountsTest() {
+	public void getAccounts_Success() {
 		
 		Optional<RoleEntity> role = this.createMockedRole();
 		
+		AccountFilter filter = this.createAccountFilter();
+		Pageable pageable = this.createPageable();
+		
 		Mockito.when(roleRepository.findById(1L)).thenReturn(role);
-		Mockito.when(accountRepositoy.filter(Mockito.any(), Mockito.any())).thenReturn(new PageImpl<AccountEntity>(new ArrayList<>()));
+		Mockito.when(accountRepositoy.filter(filter, pageable)).thenReturn(new PageImpl<AccountEntity>(new ArrayList<>()));
 		
-		accountService.getAccounts(this.createAccountFilter(), this.createPageable());
+		accountService.getAccounts(filter, pageable);
 		
-		Mockito.verify(accountRepositoy,times(1)).filter(Mockito.any(), Mockito.any());
+		Mockito.verify(accountRepositoy,times(1)).filter(filter, pageable);
 	}
 	
 	@Test
-	public void getAccountsTest2() {
+	public void getAccountsWithFilter_Success() {
 		
 		Mockito.when(accountRepositoy.filter(Mockito.any(), Mockito.any())).thenReturn(new PageImpl<AccountEntity>(new ArrayList<>()));
 		
@@ -114,7 +117,7 @@ public class AccountServiceTest {
 	}	
 	
 	@Test
-	public void whenExceptionThrown_thenAssertionSucceeds2() {
+	public void roleNotFoundThenExceptionThrown_Fail() {
 	    
 		Mockito.when(roleRepository.findById(1L)).thenReturn(Optional.empty());
 		

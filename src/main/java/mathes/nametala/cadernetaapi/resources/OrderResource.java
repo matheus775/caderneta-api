@@ -21,55 +21,55 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import mathes.nametala.cadernetaapi.event.NewResourceEvent;
-import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
-import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
-import mathes.nametala.cadernetaapi.services.RecordService;
+import mathes.nametala.cadernetaapi.model.entitys.OrderEntity;
+import mathes.nametala.cadernetaapi.repository.filter.OrderFilter;
+import mathes.nametala.cadernetaapi.services.OrderService;
 
 @RestController
-@RequestMapping("/records")
-public class RecordResource {
+@RequestMapping("/orders")
+public class OrderResource {
 
 	@Autowired
 	ApplicationEventPublisher applicationEventPublisher;
 	
 	@Autowired
-	private RecordService recordService;
+	private OrderService orderService;
 
 	@GetMapping
 	@PreAuthorize("anyAuthority()")
-	public Page<RecordEntity> getRecords(Pageable pageable,RecordFilter recordFilter) {
-		return recordService.getRecords(pageable, recordFilter);
+	public Page<OrderEntity> getOrders(Pageable pageable,OrderFilter orderFilter) {
+		return orderService.getOrders(pageable, orderFilter);
 	}
 	
 	@GetMapping("/{id}")
 	@PreAuthorize("anyAuthority()")
-	public RecordEntity getRecord(@PathVariable Long id) {
-		return recordService.getRecord(id);
+	public OrderEntity getOrder(@PathVariable Long id) {
+		return orderService.getOrder(id);
 	}
 	
 	@PostMapping
 	@PreAuthorize("anyAuthority()")
-	public ResponseEntity<RecordEntity> newRecord(@Valid @RequestBody RecordEntity record, HttpServletResponse response) {
+	public ResponseEntity<OrderEntity> newOrder(@Valid @RequestBody OrderEntity order, HttpServletResponse response) {
 		
-		RecordEntity newRecord = recordService.newRecord(record);
-		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, newRecord.getId()));
+		OrderEntity newOrder = orderService.newOrder(order);
+		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, newOrder.getId()));
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(newRecord);
+		return ResponseEntity.status(HttpStatus.CREATED).body(newOrder);
 	}
 	
 	@DeleteMapping("/{id}")
 	@PreAuthorize("anyAuthority()")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delRecord(@PathVariable Long id) {
-		recordService.delRecord(id);
+	public void delOrder(@PathVariable Long id) {
+		orderService.delOrder(id);
 	};
 	
 	@PutMapping("/{id}")
 	@PreAuthorize("anyAuthority()")
-	public ResponseEntity<RecordEntity> uptdRecord(@PathVariable Long id, @Valid @RequestBody RecordEntity record, HttpServletResponse response) {
-		RecordEntity changedRecord = recordService.uptdRecord(record,id);
-		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedRecord.getId()));
+	public ResponseEntity<OrderEntity> uptdOrder(@PathVariable Long id, @Valid @RequestBody OrderEntity order, HttpServletResponse response) {
+		OrderEntity changedOrder = orderService.uptdOrder(order,id);
+		applicationEventPublisher.publishEvent(new NewResourceEvent(this, response, changedOrder.getId()));
 		
-		return ResponseEntity.status(HttpStatus.OK).body(changedRecord);
+		return ResponseEntity.status(HttpStatus.OK).body(changedOrder);
 	}
 }

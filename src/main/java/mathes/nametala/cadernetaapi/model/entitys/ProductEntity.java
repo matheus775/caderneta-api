@@ -1,6 +1,7 @@
 package mathes.nametala.cadernetaapi.model.entitys;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class ProductEntity {
 	
 	@Id
@@ -61,4 +62,22 @@ public class ProductEntity {
 		
 		return "{\"id\":"+this.id+",\"name\":\""+this.name+"\",\"value\":"+this.value+",\"createdOn\":\""+this.createdOn+"\"}";
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+
+		if (o == this)
+			return true;
+
+		if (!(o instanceof ProductEntity))
+			return false;
+
+		ProductEntity c = (ProductEntity) o;
+
+		return Objects.equals(c.getId(), this.id)
+				&& Objects.equals(c.getName(), this.getName())
+				&& Objects.equals(c.getValue(), this.getValue())
+				&& Objects.equals(c.getcreatedOn(), this.getcreatedOn());
+	}
+	
 }

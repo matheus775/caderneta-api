@@ -39,25 +39,25 @@ import mathes.nametala.cadernetaapi.exceptionhandler.apiResponseEntityExceptionH
 import mathes.nametala.cadernetaapi.exceptionhandler.myExceptions.IdNotFoundException;
 import mathes.nametala.cadernetaapi.model.entitys.AccountEntity;
 import mathes.nametala.cadernetaapi.model.entitys.CustomerEntity;
+import mathes.nametala.cadernetaapi.model.entitys.OrderEntity;
 import mathes.nametala.cadernetaapi.model.entitys.ProductEntity;
-import mathes.nametala.cadernetaapi.model.entitys.RecordEntity;
 import mathes.nametala.cadernetaapi.model.entitys.RoleEntity;
-import mathes.nametala.cadernetaapi.repository.filter.RecordFilter;
-import mathes.nametala.cadernetaapi.resources.RecordResource;
-import mathes.nametala.cadernetaapi.services.RecordService;
+import mathes.nametala.cadernetaapi.repository.filter.OrderFilter;
+import mathes.nametala.cadernetaapi.resources.OrderResource;
+import mathes.nametala.cadernetaapi.services.OrderService;
 
-@WebMvcTest(controllers = RecordResource.class)
-@ContextConfiguration(classes = {(RecordResource.class),(apiResponseEntityExceptionHandler.class)})
-public class RecordResourceTests {
+@WebMvcTest(controllers = OrderResource.class)
+@ContextConfiguration(classes = {(OrderResource.class),(apiResponseEntityExceptionHandler.class)})
+public class OrderResourceTests {
 
 	@MockBean
-	private RecordService recordService;
+	private OrderService orderService;
 
 	@MockBean
 	private Pageable pageable;
 	
 	@MockBean
-	private RecordFilter recordFilter;
+	private OrderFilter orderFilter;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -113,266 +113,275 @@ public class RecordResourceTests {
 		return mockedEntity;
 	}
 	
-	public RecordEntity createMockedRecordEntity() {
-		RecordEntity record = new RecordEntity();
-		record.setId(2L);
-		record.setTotal(new BigDecimal(25));
-		record.setCreatedOn(LocalDate.parse("2021-11-04"));
-		record.setAccount(this.createMockedAccountEntity());
-		record.setCustomer(this.createMockedcCustomerEntity());
-		record.setProducts(this.createMockedProductsEntity());
-		return record;
+	public OrderEntity createMockedOrderEntity() {
+		OrderEntity order = new OrderEntity();
+		order.setId(2L);
+		order.setTotal(new BigDecimal(25));
+		order.setCreatedOn(LocalDate.parse("2021-11-04"));
+		order.setAccount(this.createMockedAccountEntity());
+		order.setCustomer(this.createMockedcCustomerEntity());
+		order.setProducts(this.createMockedProductsEntity());
+		return order;
 	}
 	
 	@Test
 	@WithMockUser
-	void getRecords_noFilter_OK() throws Exception {
+	void getOrders_noFilter_OK() throws Exception {
 		
-		when(recordService.getRecords(null, null))
-			.thenReturn(new PageImpl<RecordEntity>(new ArrayList<>()));
+		when(orderService.getOrders(null, null))
+			.thenReturn(new PageImpl<OrderEntity>(new ArrayList<>()));
 		
-		mockMvc.perform(get("/records"))
+		mockMvc.perform(get("/orders"))
 				.andExpect(status().isOk());
 		
-		Mockito.verify(recordService,times(1)).getRecords(Mockito.any(), Mockito.any());
+		Mockito.verify(orderService,times(1)).getOrders(Mockito.any(), Mockito.any());
 	}
 	
 	@Test
 	@WithMockUser
-	void getRecord_existentID_OK() throws Exception {
+	void getOrder_existentID_OK() throws Exception {
 		
-		RecordEntity expectedResult = this.createMockedRecordEntity();
+		OrderEntity expectedResult = this.createMockedOrderEntity();
 		
-		when(recordService.getRecord(2L))
+		when(orderService.getOrder(2L))
 			.thenReturn(expectedResult);
 		
 		ResultActions resultActions = mockMvc.perform(
-				get("/records/{id}",2L))
+				get("/orders/{id}",2L))
 				.andExpect(status().isOk());
 		
 
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
 		
-		Mockito.verify(recordService,times(1)).getRecord(2L);
+		Mockito.verify(orderService,times(1)).getOrder(2L);
 	}
 	
 	@Test
 	@WithMockUser
-	void getRecord_nonexistentID_NOT_FOUND() throws Exception {
+	void getOrder_nonexistentID_NOT_FOUND() throws Exception {
 		
-		when(recordService.getRecord(0L))
+		when(orderService.getOrder(0L))
 			.thenThrow(NoSuchElementException.class);
 		
 		mockMvc.perform(
-				get("/records/{id}",0L))
+				get("/orders/{id}",0L))
 				.andExpect(status().isNotFound());
 		
-		Mockito.verify(recordService,times(1)).getRecord(0L);
+		Mockito.verify(orderService,times(1)).getOrder(0L);
 	}
 	
 	@Test
 	@WithMockUser
-	public void postRecord_correctData_OK() throws Exception {
+	public void postOrder_correctData_OK() throws Exception {
 		
-		RecordEntity expectedResult = this.createMockedRecordEntity();
-		
-		when(recordService.newRecord(Mockito.any()))
+		OrderEntity expectedResult = this.createMockedOrderEntity();
+		OrderEntity order = this.createMockedOrderEntity();
+		order.setId(null);
+		when(orderService.newOrder(order))
 		.thenReturn(expectedResult);
 		
 		ResultActions resultActions = mockMvc.perform(
-				post("/records")
+				post("/orders")
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedcCustomerEntity().toString()))
+					.content(order.toString()))
 				.andExpect(status().isCreated());
 		
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
 		
-		Mockito.verify(recordService,times(1)).newRecord(Mockito.any());
+		Mockito.verify(orderService,times(1)).newOrder(order);
 	}
 	
 	@Test
 	@WithMockUser
-	public void postRecord_negativeTotal_BAD_REQUEST() throws Exception {
+	public void postOrder_negativeTotal_BAD_REQUEST() throws Exception {
 		
-		RecordEntity record = this.createMockedRecordEntity();
-		record.setTotal(new BigDecimal("-0.1"));
+		OrderEntity order = this.createMockedOrderEntity();
+		order.setTotal(new BigDecimal("-0.1"));
 		
 		mockMvc.perform(
-				post("/records")
+				post("/orders")
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(record.toString()))
+					.content(order.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(recordService,times(0)).newRecord(Mockito.any());
+		Mockito.verify(orderService,times(0)).newOrder(order);
 	}
 	
 	@Test
 	@WithMockUser
-	public void postRecord_tooManyFractionTotal_BAD_REQUEST() throws Exception {
+	public void postOrder_tooManyFractionTotal_BAD_REQUEST() throws Exception {
 		
-		RecordEntity record = this.createMockedRecordEntity();
-		record.setTotal(new BigDecimal("5.122"));
+		OrderEntity order = this.createMockedOrderEntity();
+		order.setTotal(new BigDecimal("5.122"));
 		
 		mockMvc.perform(
-				post("/records")
+				post("/orders")
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(record.toString()))
+					.content(order.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(recordService,times(0)).newRecord(Mockito.any());
+		Mockito.verify(orderService,times(0)).newOrder(order);
 	}
 	
 	@Test
 	@WithMockUser
-	public void postRecord_depedenceIdNotFound_BAD_REQUEST() throws Exception {
+	public void postOrder_depedenceIdNotFound_BAD_REQUEST() throws Exception {
 		
-		doThrow(IdNotFoundException.class).when(recordService).newRecord(Mockito.any());;
+		OrderEntity order = this.createMockedOrderEntity();
+		
+		doThrow(IdNotFoundException.class).when(orderService).newOrder(order);;
 			
 		mockMvc.perform(
-				post("/records")
+				post("/orders")
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedRecordEntity().toString()))
+					.content(order.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(recordService,times(1)).newRecord(Mockito.any());
+		Mockito.verify(orderService,times(1)).newOrder(order);
 	}
 
 	@Test
 	@WithMockUser
-	void delRecordr_existentID_OK() throws Exception {
+	void delOrderr_existentID_OK() throws Exception {
 		
-		doNothing().when(recordService).delRecord(2L);;
+		doNothing().when(orderService).delOrder(2L);;
 		
 		mockMvc.perform(
-				delete("/records/{id}",2L)
+				delete("/orders/{id}",2L)
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken()))
 				.andExpect(status().isNoContent());
 		
-		Mockito.verify(recordService,times(1)).delRecord(2L);
+		Mockito.verify(orderService,times(1)).delOrder(2L);
 	}
 	
 	@Test
 	@WithMockUser
-	void delRecord_nonexistentID_NOT_FOUND() throws Exception {
+	void delOrder_nonexistentID_NOT_FOUND() throws Exception {
 		
-		doThrow(NoSuchElementException.class).when(recordService).delRecord(0L);
+		doThrow(NoSuchElementException.class).when(orderService).delOrder(0L);
 		
-		mockMvc.perform(delete("/records/{id}",0L)
+		mockMvc.perform(delete("/orders/{id}",0L)
 				.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 		        .param(csrfToken.getParameterName(), csrfToken.getToken()))
 				.andExpect(status().isNotFound());
 		
-		Mockito.verify(recordService,times(1)).delRecord(0L);
+		Mockito.verify(orderService,times(1)).delOrder(0L);
 	}
 	
 	@Test
 	@WithMockUser
-	public void putRecord_correctData_OK() throws Exception {
+	public void putOrder_correctData_OK() throws Exception {
 		
-		RecordEntity expectedResult = this.createMockedRecordEntity();
+		OrderEntity expectedResult = this.createMockedOrderEntity();
+		expectedResult.setTotal(BigDecimal.valueOf(64));
 		
-		when(recordService.uptdRecord(Mockito.any(),Mockito.any()))
+		when(orderService.uptdOrder(expectedResult,2L))
 		.thenReturn(expectedResult);
 		
 		ResultActions resultActions = mockMvc.perform(
-				put("/records/{id}",2L)
+				put("/orders/{id}",2L)
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedRecordEntity().toString()))
+					.content(expectedResult.toString()))
 				.andExpect(status().isOk());
 		
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
 		
-		Mockito.verify(recordService,times(1)).uptdRecord(Mockito.any(), Mockito.any());
+		Mockito.verify(orderService,times(1)).uptdOrder(expectedResult,2L);
 		
 	}
 	
 	
 	@Test
 	@WithMockUser
-	public void putRecord_nonExistentId_BAD_REQUEST() throws Exception {
+	public void putOrder_nonExistentId_BAD_REQUEST() throws Exception {
 		
-		when(recordService.uptdRecord(Mockito.any(), Mockito.any()))
+		OrderEntity order = this.createMockedOrderEntity();
+		order.setTotal(BigDecimal.valueOf(64));
+		
+		when(orderService.uptdOrder(order, 0L))
 		.thenThrow(NoSuchElementException.class);
 		
 		mockMvc.perform(
-				put("/records/{id}",2L)
+				put("/orders/{id}",0L)
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedRecordEntity().toString()))
+					.content(order.toString()))
 				.andExpect(status().isNotFound());
 		
-		Mockito.verify(recordService,times(1)).uptdRecord(Mockito.any(), Mockito.any());
+		Mockito.verify(orderService,times(1)).uptdOrder(order, 0L);
 		
 	}
 	
 	@Test
 	@WithMockUser
-	public void putRecord_negativeTotal_BAD_REQUEST() throws Exception {
+	public void putOrder_negativeTotal_BAD_REQUEST() throws Exception {
 		
-		RecordEntity record = this.createMockedRecordEntity();
-		record.setTotal(new BigDecimal("-0.1"));
+		OrderEntity order = this.createMockedOrderEntity();
+		order.setTotal(new BigDecimal("-0.1"));
 		
 		mockMvc.perform(
-				put("/records/{id}",2L)
+				put("/orders/{id}",2L)
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(record.toString()))
+					.content(order.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(recordService,times(0)).uptdRecord(Mockito.any(), Mockito.any());
+		Mockito.verify(orderService,times(0)).uptdOrder(order, 2L);
 		
 	}
 	
 	@Test
 	@WithMockUser
-	public void putRecord_tooManyFractionTotal_BAD_REQUEST() throws Exception {
+	public void putOrder_tooManyFractionTotal_BAD_REQUEST() throws Exception {
 		
-		RecordEntity record = this.createMockedRecordEntity();
-		record.setTotal(new BigDecimal("5.122"));
+		OrderEntity order = this.createMockedOrderEntity();
+		order.setTotal(new BigDecimal("5.122"));
 		
 		mockMvc.perform(
-				put("/records/{id}",2L)
+				put("/orders/{id}",2L)
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(record.toString()))
+					.content(order.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(recordService,times(0)).uptdRecord(Mockito.any(), Mockito.any());
+		Mockito.verify(orderService,times(0)).uptdOrder(order, 2L);
 		
 	}
 	
 	@Test
 	@WithMockUser
-	public void putRecord_depedenceIdNotFound_BAD_REQUEST() throws Exception {
+	public void putOrder_depedenceIdNotFound_BAD_REQUEST() throws Exception {
 		
-		doThrow(IdNotFoundException.class).when(recordService).uptdRecord(Mockito.any(), Mockito.any());
+		OrderEntity order = this.createMockedOrderEntity();
+		
+		doThrow(IdNotFoundException.class).when(orderService).uptdOrder(order, 2L);
 		
 		mockMvc.perform(
-				put("/records/{id}",2L)
+				put("/orders/{id}",2L)
 					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 					.param(csrfToken.getParameterName(), csrfToken.getToken())
 					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedRecordEntity().toString()))
+					.content(order.toString()))
 				.andExpect(status().isBadRequest());
 		
-		Mockito.verify(recordService,times(1)).uptdRecord(Mockito.any(), Mockito.any());
+		Mockito.verify(orderService,times(1)).uptdOrder(order, 2L);
 		
 	}
 

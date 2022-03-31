@@ -1,5 +1,7 @@
 package mathes.nametala.cadernetaapi.model.entitys;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,29 +15,29 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
-@Table(name="customer")
+@Table(name = "customers")
 public class CustomerEntity {
-	
+
 	@Id
-	@Column(name="customer_id")
+	@Column(name = "customer_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Pattern(regexp = "^[a-zA-Z\\u00C0-\\u017F´\s]{0,}$")
-	@Column(name="customer_name")
+
+	@Pattern(regexp = "^[\\p{L} .'-]+$")
+	@Column(name = "customer_name")
 	private String name;
-	
+
 	@Email
-	@Column(name="customer_email")
+	@Column(name = "customer_email")
 	private String email;
-	
+
 	@NotEmpty
-	@Column(name="customer_adress")
+	@Column(name = "customer_adress")
 	private String adress;
-	
+
 	@NotEmpty
 	@CPF
-	@Column(name="customer_cpf")
+	@Column(name = "customer_cpf")
 	private String cpf;
 
 	public Long getId() {
@@ -80,9 +82,25 @@ public class CustomerEntity {
 
 	@Override
 	public String toString() {
-		return "{\"id\":" + id + ",\"name\":\"" + name + "\",\"email\":\"" + email + "\",\"adress\":\"" + adress + "\",\"cpf\":\""
-				+cpf + "\"}";
+		return "{\"id\":" + id + ",\"name\":\"" + name + "\",\"email\":\"" + email + "\",\"adress\":\"" + adress
+				+ "\",\"cpf\":\"" + cpf + "\"}";
 	}
 	
-	
+	@Override
+	public boolean equals(Object o) {
+
+		if (o == this)
+			return true;
+
+		if (!(o instanceof CustomerEntity))
+			return false;
+
+		CustomerEntity c = (CustomerEntity) o;
+
+		return Objects.equals(c.getId(), this.getId())
+				&& Objects.equals(c.getName(), this.getName())
+				&& Objects.equals(c.getAdress(), this.getAdress())
+				&& Objects.equals(c.getEmail(), this.getEmail())
+				&& Objects.equals(c.getCpf(), this.getCpf());
+	}
 }

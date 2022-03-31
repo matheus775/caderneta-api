@@ -14,21 +14,21 @@ import mathes.nametala.cadernetaapi.repository.filter.AccountFilter;
 import mathes.nametala.cadernetaapi.services.AccountService;
 
 @Service
-public class AccountServiceImpl implements AccountService{
-	
+public class AccountServiceImpl implements AccountService {
+
 	@Autowired
 	private AccountRepositoy accountRepositoy;
-	
+
 	@Autowired
 	private RoleRepository roleRepository;
-	
+
 	@Override
 	public Page<AccountEntity> getAccounts(AccountFilter accountFilter, Pageable pageable) {
-		if(accountFilter.getRoles()!=null) {
-			for(Long role: accountFilter.getRoles()) {
-				if(roleRepository.findById(role).isEmpty())
-					throw new IdNotFoundException(role, RoleEntity.class);
-			};
+		if (accountFilter.getRoles() != null) {
+			accountFilter.getRoles().stream().forEach(roleId -> {
+				if (roleRepository.findById(roleId).isEmpty())
+					throw new IdNotFoundException(roleId, RoleEntity.class);
+			});
 		}
 		return accountRepositoy.filter(accountFilter, pageable);
 	}
@@ -50,11 +50,11 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public  AccountEntity  updtAccount(AccountEntity account,Long id) {
+	public AccountEntity updtAccount(AccountEntity account, Long id) {
 		AccountEntity accountdB = accountRepositoy.findById(id).get();
-		
+
 		this.verifyRoleId(accountdB);
-		
+
 		accountdB.setUsername(account.getUsername());
 		accountdB.setEmail(account.getEmail());
 		accountdB.setPassword(account.getPassword());
@@ -63,10 +63,10 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	public void verifyRoleId(AccountEntity account) {
-		for(RoleEntity role: account.getRoles()) {
-			if(roleRepository.findById(role.getId()).isEmpty())
-				throw new IdNotFoundException(role.getId(), RoleEntity.class);
-		};
+		account.getRoles().stream().mapToLong(RoleEntity::getId).forEach(roleId -> {
+			if (roleRepository.findById(roleId).isEmpty())
+				throw new IdNotFoundException(roleId, RoleEntity.class);
+		});
 	}
-	
+
 }

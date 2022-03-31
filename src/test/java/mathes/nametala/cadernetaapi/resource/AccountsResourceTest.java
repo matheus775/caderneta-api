@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -41,34 +42,33 @@ import mathes.nametala.cadernetaapi.resources.AccountsResource;
 import mathes.nametala.cadernetaapi.services.AccountService;
 
 @WebMvcTest(controllers = AccountsResource.class)
-@ContextConfiguration(classes = {(AccountsResource.class),(apiResponseEntityExceptionHandler.class)})
+@ContextConfiguration(classes = { (AccountsResource.class), (apiResponseEntityExceptionHandler.class) })
 public class AccountsResourceTest {
-	
+
 	String TOKEN_ATTR_NAME = "org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN";
 	HttpSessionCsrfTokenRepository httpSessionCsrfTokenRepository = new HttpSessionCsrfTokenRepository();
 	CsrfToken csrfToken = httpSessionCsrfTokenRepository.generateToken(new MockHttpServletRequest());
 
-	
 	@MockBean
 	private AccountService accountService;
 
 	@MockBean
 	private Pageable pageable;
-	
+
 	@MockBean
 	private AccountFilter accountFilter;
-	
+
 	@Autowired
 	private MockMvc mockMvc;
-	
+
 	public AccountEntity createMockedAccountEntity() {
-		
+
 		RoleEntity role = new RoleEntity();
 		role.setId(1L);
 		role.setName("Admin");
-		Set<RoleEntity>roles = new HashSet<>() ;
+		Set<RoleEntity> roles = new HashSet<>();
 		roles.add(role);
-		
+
 		AccountEntity account = new AccountEntity();
 		account.setId(1L);
 		account.setUsername("testAdmin");
@@ -77,367 +77,300 @@ public class AccountsResourceTest {
 		account.setEmail("teste@email.com");
 		return account;
 	}
-	
-	
+
 	@Test
 	@WithMockUser
 	void getAccounts_noFilter_OK() throws Exception {
-		
-		when(accountService.getAccounts(null, null))
-			.thenReturn(new PageImpl<AccountEntity>(new ArrayList<>()));
-		
-		mockMvc.perform(get("/accounts"))
-				.andExpect(status().isOk());
-		
-		Mockito.verify(accountService,times(1)).getAccounts(Mockito.any(), Mockito.any());
+
+		when(accountService.getAccounts(null, null)).thenReturn(new PageImpl<AccountEntity>(new ArrayList<>()));
+
+		mockMvc.perform(get("/accounts")).andExpect(status().isOk());
+
+		Mockito.verify(accountService, times(1)).getAccounts(Mockito.any(), Mockito.any());
 	}
-	
+
 	@Test
 	@WithMockUser
 	void getAccount_existentID_OK() throws Exception {
-		
+
 		AccountEntity expectedResult = this.createMockedAccountEntity();
-		
-		when(accountService.getAccount(2L))
-			.thenReturn(expectedResult);
-		
-		ResultActions resultActions = mockMvc.perform(
-				get("/accounts/{id}",2L))
-				.andExpect(status().isOk());
-		
+
+		when(accountService.getAccount(2L)).thenReturn(expectedResult);
+
+		ResultActions resultActions = mockMvc.perform(get("/accounts/{id}", 2L)).andExpect(status().isOk());
 
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
-		
-		Mockito.verify(accountService,times(1)).getAccount(2L);
+
+		Mockito.verify(accountService, times(1)).getAccount(2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	void getAccount_nonexistentID_NOT_FOUND() throws Exception {
-		
-		when(accountService.getAccount(0L))
-			.thenThrow(NoSuchElementException.class);
-		
-		mockMvc.perform(
-				get("/accounts/{id}",0L))
-				.andExpect(status().isNotFound());
-		
-		Mockito.verify(accountService,times(1)).getAccount(0L);
+
+		when(accountService.getAccount(0L)).thenThrow(NoSuchElementException.class);
+
+		mockMvc.perform(get("/accounts/{id}", 0L)).andExpect(status().isNotFound());
+
+		Mockito.verify(accountService, times(1)).getAccount(0L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_correctData_OK() throws Exception {
-		
+
 		AccountEntity expectedResult = this.createMockedAccountEntity();
-		
-		when(accountService.newAccount(Mockito.any()))
-		.thenReturn(expectedResult);
-		
-		ResultActions resultActions = mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(expectedResult.toString()))
+		AccountEntity newAccount = this.createMockedAccountEntity();
+		newAccount.setId(null);
+
+		when(accountService.newAccount(newAccount)).thenReturn(expectedResult);
+
+		ResultActions resultActions = mockMvc
+				.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+						.param(csrfToken.getParameterName(), csrfToken.getToken())
+						.contentType(MediaType.APPLICATION_JSON).content(newAccount.toString()))
 				.andExpect(status().isCreated());
-		
+
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
-		
-		Mockito.verify(accountService,times(1)).newAccount(Mockito.any());
+
+		Mockito.verify(accountService, times(1)).newAccount(newAccount);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_smallUsername_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
 		account.setUsername("us");
-		
-		mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+
+		mockMvc.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).newAccount(account);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_bigUsername_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
-		account.setUsername("useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-				+ "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer");
-		
-		mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+		account.setUsername(
+				"useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" + "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer");
+
+		mockMvc.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).newAccount(account);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_smallPassword_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
 		account.setPassword("12");
-		
-		mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+
+		mockMvc.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).newAccount(account);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_bigPassword_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
-		account.setPassword("10012837491278309128318273490128734091287"
-				+ "098127349817234908127349018273491273490128734123412");
-		
-		mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+		account.setPassword(
+				"10012837491278309128318273490128734091287" + "098127349817234908127349018273491273490128734123412");
+
+		mockMvc.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).newAccount(account);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_invalidEmail_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
 		account.setEmail("myemail.com");
-		
-		mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+
+		mockMvc.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).newAccount(account);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void postAccount_missingRole_BAD_REQUEST() throws Exception {
 
-		mockMvc.perform(
-				post("/accounts")
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content("{\"id\":1,\"username\":\"testAdmin\","
-							+ "\"password\":\"12345678\","
-							+ "\"email\":\"teste@email.com\"}"))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+		AccountEntity account = this.createMockedAccountEntity();
+		account.setRoles(Collections.emptySet());
+		mockMvc.perform(post("/accounts").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).newAccount(account);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_correctData_OK() throws Exception {
-		
+
 		AccountEntity expectedResult = this.createMockedAccountEntity();
-		
-		when(accountService.updtAccount(Mockito.any(),Mockito.any()))
-		.thenReturn(expectedResult);
-		
-		ResultActions resultActions = mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(expectedResult.toString()))
+		AccountEntity account = this.createMockedAccountEntity();
+		account.setId(null);
+
+		when(accountService.updtAccount(account, 2L)).thenReturn(expectedResult);
+
+		ResultActions resultActions = mockMvc
+				.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+						.param(csrfToken.getParameterName(), csrfToken.getToken())
+						.contentType(MediaType.APPLICATION_JSON).content(account.toString()))
 				.andExpect(status().isOk());
-		
+
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
-		
-		Mockito.verify(accountService,times(1)).updtAccount(Mockito.any(), Mockito.any());
-		
+
+		Mockito.verify(accountService, times(1)).updtAccount(account, 2L);
+
 	}
-	
-	
+
 	@Test
 	@WithMockUser
 	public void putRecord_nonExistentId_BAD_REQUEST() throws Exception {
 		
-		when(accountService.updtAccount(Mockito.any(), Mockito.any()))
-		.thenThrow(NoSuchElementException.class);
+		AccountEntity account = this.createMockedAccountEntity();
 		
-		mockMvc.perform(
-				put("/accounts/{id}",0L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(this.createMockedAccountEntity().toString()))
-				.andExpect(status().isNotFound());
-		
-		Mockito.verify(accountService,times(1)).updtAccount(Mockito.any(), Mockito.any());
-		
+		when(accountService.updtAccount(account, 0L)).thenThrow(NoSuchElementException.class);
+
+		mockMvc.perform(put("/accounts/{id}", 0L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(this.createMockedAccountEntity().toString())).andExpect(status().isNotFound());
+
+		Mockito.verify(accountService, times(1)).updtAccount(account, 0L);
+
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_smallUsername_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
 		account.setUsername("us");
-		
-		mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).updtAccount(Mockito.any(), Mockito.any());
-		
+
+		mockMvc.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).updtAccount(account, 2L);
+
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_bigUsername_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
-		account.setUsername("useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-				+ "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer");
-		
-		mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+		account.setUsername(
+				"useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" + "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer");
+
+		mockMvc.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).updtAccount(account, 2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_smallPassword_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
 		account.setPassword("12");
-		
-		mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+
+		mockMvc.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).updtAccount(account, 2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_bigPassword_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
-		account.setPassword("10012837491278309128318273490128734091287"
-				+ "098127349817234908127349018273491273490128734123412");
-		
-		mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+		account.setPassword(
+				"10012837491278309128318273490128734091287" + "098127349817234908127349018273491273490128734123412");
+
+		mockMvc.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).updtAccount(account, 2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_invalidEmail_BAD_REQUEST() throws Exception {
-		
+
 		AccountEntity account = this.createMockedAccountEntity();
 		account.setEmail("myemail.com");
-		
-		mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(account.toString()))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+
+		mockMvc.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).updtAccount(account, 2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	public void putAccount_missingRole_BAD_REQUEST() throws Exception {
 
-		mockMvc.perform(
-				put("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content("{\"id\":1,\"username\":\"testAdmin\","
-							+ "\"password\":\"12345678\","
-							+ "\"email\":\"teste@email.com\"}"))
-				.andExpect(status().isBadRequest());
-		
-		Mockito.verify(accountService,times(0)).newAccount(Mockito.any());
+		AccountEntity account = this.createMockedAccountEntity();
+		account.setRoles(Collections.emptySet());
+
+		mockMvc.perform(put("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
+				.content(account.toString())).andExpect(status().isBadRequest());
+
+		Mockito.verify(accountService, times(0)).updtAccount(account, 2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	void delAccount_existentID_OK() throws Exception {
-		
-		doNothing().when(accountService).delAccount(2L);;
-		
-		mockMvc.perform(
-				delete("/accounts/{id}",2L)
-					.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-					.param(csrfToken.getParameterName(), csrfToken.getToken()))
-				.andExpect(status().isNoContent());
-		
-		Mockito.verify(accountService,times(1)).delAccount(2L);
+
+		doNothing().when(accountService).delAccount(2L);
+		;
+
+		mockMvc.perform(delete("/accounts/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken())).andExpect(status().isNoContent());
+
+		Mockito.verify(accountService, times(1)).delAccount(2L);
 	}
-	
+
 	@Test
 	@WithMockUser
 	void delAccount_nonexistentID_NOT_FOUND() throws Exception {
-		
+
 		doThrow(NoSuchElementException.class).when(accountService).delAccount(0L);
-		
-		mockMvc.perform(delete("/accounts/{id}",0L)
-				.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
-		        .param(csrfToken.getParameterName(), csrfToken.getToken()))
-				.andExpect(status().isNotFound());
-		
-		Mockito.verify(accountService,times(1)).delAccount(0L);
+
+		mockMvc.perform(delete("/accounts/{id}", 0L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
+				.param(csrfToken.getParameterName(), csrfToken.getToken())).andExpect(status().isNotFound());
+
+		Mockito.verify(accountService, times(1)).delAccount(0L);
 	}
 }

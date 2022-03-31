@@ -139,9 +139,10 @@ public class ProductResourceTest {
 	void postProduct_correctData_OK() throws Exception {
 		
 		ProductEntity expectedResult = this.createMockedProductEntity();
+		ProductEntity newProduct = this.createMockedProductEntity();
+		newProduct.setId(null);
 		
-		
-		when(productService.newProduct(Mockito.any()))
+		when(productService.newProduct(newProduct))
 			.thenReturn(expectedResult);
 		
 		ResultActions resultActions = 
@@ -149,13 +150,13 @@ public class ProductResourceTest {
 				.sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 				.param(csrfToken.getParameterName(), csrfToken.getToken())
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(this.createMockedProductEntity().toString()))
+				.content(newProduct.toString()))
 			.andExpect(status().isCreated());
 		
 		MvcResult result = resultActions.andReturn();
 		Assertions.assertEquals(result.getResponse().getContentAsString(), expectedResult.toString());
 		
-		Mockito.verify(productService,times(1)).newProduct(Mockito.any());
+		Mockito.verify(productService,times(1)).newProduct(newProduct);
 		
 	}
 	
@@ -172,7 +173,7 @@ public class ProductResourceTest {
 			.content(newProduct.toString()))
 		.andExpect(status().isBadRequest());
 		
-		Mockito.verify(productService,times(0)).newProduct(Mockito.any());
+		Mockito.verify(productService,times(0)).newProduct(newProduct);
 		
 	}
 	
@@ -193,7 +194,7 @@ public class ProductResourceTest {
 			.content(newProduct.toString()))
 		.andExpect(status().isBadRequest());
 		
-		Mockito.verify(productService,times(0)).newProduct(Mockito.any());
+		Mockito.verify(productService,times(0)).newProduct(newProduct);
 		
 	}
 	
@@ -210,7 +211,7 @@ public class ProductResourceTest {
 			.content(newProduct.toString()))
 		.andExpect(status().isBadRequest());
 		
-		Mockito.verify(productService,times(0)).newProduct(Mockito.any());
+		Mockito.verify(productService,times(0)).newProduct(newProduct);
 		
 	}
 	

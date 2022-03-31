@@ -1,4 +1,4 @@
-CREATE TABLE customer(
+CREATE TABLE customers(
 	customer_id SERIAL PRIMARY KEY,
 	customer_name VARCHAR (50) NOT NULL,
 	customer_email VARCHAR (50),
@@ -8,15 +8,15 @@ CREATE TABLE customer(
 
 
 
-CREATE TABLE product (
+CREATE TABLE products (
 	product_id serial PRIMARY KEY,
 	product_name VARCHAR ( 50 ) NOT NULL,
 	value DECIMAL NOT NULL,
 	created_on DATE NOT NULL 
 );   
 
-CREATE TABLE record (
-	record_id serial PRIMARY KEY,
+CREATE TABLE orders(
+	order_id serial PRIMARY KEY,
 	user_id INT NOT NULL,
 	customer_id INT NOT NULL,
 	total_value DECIMAL NOT NULL,
@@ -24,25 +24,25 @@ CREATE TABLE record (
 	FOREIGN KEY (user_id)
             REFERENCES accounts (user_id),
         FOREIGN KEY (customer_id)
-            REFERENCES customer (customer_id)
+            REFERENCES customers (customer_id)
 );
 
 
-CREATE TABLE product_record (
+CREATE TABLE products_orders (
   product_id INT NOT NULL,
-  record_id INT NOT NULL,
-  PRIMARY KEY (product_id, record_id),
+  order_id INT NOT NULL,
+  PRIMARY KEY (product_id, order_id),
   FOREIGN KEY (product_id)
-      REFERENCES product (product_id),
-  FOREIGN KEY (record_id)
-      REFERENCES record (record_id)
+      REFERENCES products (product_id),
+  FOREIGN KEY (order_id)
+      REFERENCES orders (order_id)
 );
 
 
 
 -------------------------------------------
 
-INSERT INTO customer
+INSERT INTO customers
   (customer_name,customer_email,customer_adress,customer_cpf)
 VALUES
   ('Vega','vega@gmail.com','Rua do Ryu 339, Sion','78916212313'),
@@ -52,22 +52,22 @@ VALUES
   ('Honda','honda@gmail.com','Rua do Honda 89, Simao','55516212313');
 
 
-INSERT INTO product 
+INSERT INTO products 
   (product_name,value,created_on)
 VALUES
   ('batata','2','2019-02-07 00:00:00'),
   ('arroz','13','2019-02-07 00:00:00'),
   ('feijao','6','2019-02-07 00:00:00');
 
-INSERT INTO record
+INSERT INTO orders
   (user_id,customer_id,total_value,created_on)
 VALUES
  ('3','2','23','2019-02-07 00:00:00'),
  ('3','1','43','2019-02-07 00:00:00'),
  ('3','4','66','2019-02-07 00:00:00');
 
-INSERT INTO product_record
-  (product_id,record_id)
+INSERT INTO products_orders
+  (product_id,order_id)
 VALUES
   ('1','1'),
   ('1','2'),
