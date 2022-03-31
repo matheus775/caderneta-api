@@ -37,7 +37,7 @@ import mathes.nametala.cadernetaapi.repository.filter.CustomerFilter;
 import mathes.nametala.cadernetaapi.services.CustomerService;
 
 @WebMvcTest(controllers = CustomerResource.class)
-@ContextConfiguration(classes = { (CustomerResource.class), (apiResponseEntityExceptionHandler.class) })
+@ContextConfiguration(classes = { CustomerResource.class, apiResponseEntityExceptionHandler.class})
 public class CustomerResourceTests {
 
 	@MockBean

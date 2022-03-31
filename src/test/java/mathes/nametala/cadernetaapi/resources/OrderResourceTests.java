@@ -46,7 +46,7 @@ import mathes.nametala.cadernetaapi.repository.filter.OrderFilter;
 import mathes.nametala.cadernetaapi.services.OrderService;
 
 @WebMvcTest(controllers = OrderResource.class)
-@ContextConfiguration(classes = { (OrderResource.class), (apiResponseEntityExceptionHandler.class) })
+@ContextConfiguration(classes = { OrderResource.class, apiResponseEntityExceptionHandler.class })
 public class OrderResourceTests {
 
 	@MockBean
@@ -217,7 +217,6 @@ public class OrderResourceTests {
 		OrderEntity order = this.createMockedOrderEntity();
 
 		doThrow(IdNotFoundException.class).when(orderService).newOrder(order);
-		;
 
 		mockMvc.perform(post("/orders").sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 				.param(csrfToken.getParameterName(), csrfToken.getToken()).contentType(MediaType.APPLICATION_JSON)
@@ -231,7 +230,6 @@ public class OrderResourceTests {
 	void delOrderr_existentID_OK() throws Exception {
 
 		doNothing().when(orderService).delOrder(2L);
-		;
 
 		mockMvc.perform(delete("/orders/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 				.param(csrfToken.getParameterName(), csrfToken.getToken())).andExpect(status().isNoContent());

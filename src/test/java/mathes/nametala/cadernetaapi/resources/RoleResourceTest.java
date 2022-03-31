@@ -20,7 +20,7 @@ import mathes.nametala.cadernetaapi.exceptionhandler.apiResponseEntityExceptionH
 import mathes.nametala.cadernetaapi.services.RoleService;
 
 @WebMvcTest(controllers = RoleResource.class)
-@ContextConfiguration(classes = { (RoleResource.class), (apiResponseEntityExceptionHandler.class) })
+@ContextConfiguration(classes = { RoleResource.class, apiResponseEntityExceptionHandler.class })
 public class RoleResourceTest {
 
 	@MockBean

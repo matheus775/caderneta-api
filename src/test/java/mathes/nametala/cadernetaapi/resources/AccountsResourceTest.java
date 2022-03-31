@@ -41,7 +41,7 @@ import mathes.nametala.cadernetaapi.repository.filter.AccountFilter;
 import mathes.nametala.cadernetaapi.services.AccountService;
 
 @WebMvcTest(controllers = AccountsResource.class)
-@ContextConfiguration(classes = { (AccountsResource.class), (apiResponseEntityExceptionHandler.class) })
+@ContextConfiguration(classes = { AccountsResource.class, apiResponseEntityExceptionHandler.class })
 public class AccountsResourceTest {
 
 	String TOKEN_ATTR_NAME = "org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository.CSRF_TOKEN";
