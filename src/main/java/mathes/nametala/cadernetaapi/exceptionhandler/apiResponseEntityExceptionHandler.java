@@ -57,7 +57,7 @@ public class apiResponseEntityExceptionHandler extends ResponseEntityExceptionHa
 	@ExceptionHandler(IdNotFoundException.class)
 	protected ResponseEntity<Object> handleIdNotFoundException(IdNotFoundException ex){
 		String userMessage=messageSource.getMessage("id-not-found", null,LocaleContextHolder.getLocale());
-		String devMessage = ex.toString();
+		String devMessage = ex.getMessage();
 		List<MyError> errors = Arrays.asList(new MyError(userMessage, devMessage));
 		return ResponseEntity.badRequest().body(errors);
 	}

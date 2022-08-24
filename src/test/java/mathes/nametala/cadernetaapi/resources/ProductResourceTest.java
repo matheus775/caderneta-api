@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -90,7 +91,7 @@ public class ProductResourceTest {
 	@WithMockUser
 	void getProduct_nonExistentId_NOT_FOUND() throws Exception {
 
-		when(productService.getProduct(2L)).thenThrow(IdNotFoundException.class);
+		when(productService.getProduct(2L)).thenThrow(NoSuchElementException.class);
 
 		mockMvc.perform(get("/products/{id}", 2L)).andExpect(status().isNotFound());
 
@@ -114,7 +115,7 @@ public class ProductResourceTest {
 	@WithMockUser
 	void delProduct_nonExistendId_Ok() throws Exception {
 
-		doThrow(IdNotFoundException.class).when(productService).delProduct(2L);
+		doThrow(NoSuchElementException.class).when(productService).delProduct(2L);
 
 		mockMvc.perform(delete("/products/{id}", 2L).sessionAttr(TOKEN_ATTR_NAME, csrfToken)
 				.param(csrfToken.getParameterName(), csrfToken.getToken())).andExpect(status().isNotFound());
