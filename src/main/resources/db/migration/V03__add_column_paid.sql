@@ -1,0 +1,1 @@
+ALTER TABLE orders ADD COLUMN paid BOOLEAN DEFAULT false;

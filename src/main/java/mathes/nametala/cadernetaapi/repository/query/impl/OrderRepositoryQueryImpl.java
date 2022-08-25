@@ -100,7 +100,7 @@ public class OrderRepositoryQueryImpl implements OrderRepositoryQuery{
 			Path<CustomerEntity> customerId = join.get("id");
 			predicateList.add(
 					criteriaBuilder.isTrue(customerId.in(orderFilter.getCustomerId())));
-		
+		}
 			
 		if(orderFilter.getMinTotal()!=null) 
 			predicateList.add(
@@ -117,9 +117,10 @@ public class OrderRepositoryQueryImpl implements OrderRepositoryQuery{
 		if(orderFilter.getMaxCreatedOn()!=null)
 			predicateList.add(
 				criteriaBuilder.lessThanOrEqualTo(root.get("createdOn"), orderFilter.getMaxCreatedOn()));
-			
-		}
 		
+		if(orderFilter.getPaid()!=null)
+			predicateList.add(
+				criteriaBuilder.equal(root.get("paid"), orderFilter.getPaid()));		
 		
 	}
 

@@ -23,9 +23,19 @@ public class OrderFilter {
 	private List<Long> accountId;
 	
 	private List<Long> customerId;
+	
+	private Boolean paid;
 
 	public BigDecimal getTotal() {
 		return minTotal;
+	}
+
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
 	}
 
 	public void setMinCreatedOn(LocalDate minCreatedOn) {

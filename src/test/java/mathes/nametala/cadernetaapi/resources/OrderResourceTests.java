@@ -120,6 +120,7 @@ public class OrderResourceTests {
 		order.setAccount(this.createMockedAccountEntity());
 		order.setCustomer(this.createMockedcCustomerEntity());
 		order.setProducts(this.createMockedProductsEntity());
+		order.setPaid(false);
 		return order;
 	}
 

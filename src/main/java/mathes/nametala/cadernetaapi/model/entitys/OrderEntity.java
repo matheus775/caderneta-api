@@ -51,6 +51,9 @@ public class OrderEntity {
 	@JoinColumn(name="customer_id",referencedColumnName = "customer_id")
 	private CustomerEntity customer;
 	
+	@Column(name="paid")
+	private Boolean paid;
+	
 	public Long getId() {
 		return id;
 	}
@@ -99,6 +102,14 @@ public class OrderEntity {
 		this.customer = customer;
 	}
 
+	public Boolean getPaid() {
+		return paid;
+	}
+
+	public void setPaid(Boolean paid) {
+		this.paid = paid;
+	}
+
 	@Override
 	public String toString() {
 		String result = "{\"id\":"+this.id+ ",\"total\":"+this.total+",\"createdOn\":\""+this.createdOn+"\",\"products\":[";
@@ -107,7 +118,8 @@ public class OrderEntity {
 		result = result.substring(0, result.length()-1);
 		
 		result=result+"],\"account\":"+this.account.toString()+","
-				+ "\"customer\":"+this.customer.toString()+"}";
+				+ "\"customer\":"+this.customer.toString()+","
+				+"\"paid\":"+this.paid.toString()+"}";
 		
 		return result;
 	}
@@ -127,6 +139,7 @@ public class OrderEntity {
 				&& Objects.equals(c.getTotal(), this.getTotal())
 				&& Objects.equals(c.getAccount(), this.getAccount())
 				&& Objects.equals(c.getCustomer(), this.getCustomer())
-				&& Objects.equals(c.getTotal(), this.getTotal());
+				&& Objects.equals(c.getTotal(), this.getTotal())
+				&& Objects.equals(c.getPaid(), this.getPaid());
 	}
 }

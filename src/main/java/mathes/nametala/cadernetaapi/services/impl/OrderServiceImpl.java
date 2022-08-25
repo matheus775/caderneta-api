@@ -61,6 +61,7 @@ public class OrderServiceImpl implements OrderService {
 		orderDb.setTotal(new BigDecimal(
 				order.getProducts().stream().mapToDouble(p -> productRepository.getById(p.getId()).getValue()).sum()));
 		orderDb.setProducts(order.getProducts());
+		orderDb.setPaid(order.getPaid());
 		return orderRepository.save(orderDb);
 	}
 

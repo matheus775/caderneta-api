@@ -114,6 +114,7 @@ public class OrderServiceTest {
 		order.setProducts(products);
 		order.setTotal(new BigDecimal(120.5));
 		order.setCreatedOn(LocalDate.of(2021, 12, 7));
+		order.setPaid(false);
 		return Optional.of(order);
 	}
 	
@@ -233,6 +234,7 @@ public class OrderServiceTest {
 		
 		doNothing().when(spy).verifyIds(expectedResult);
 		Mockito.when(orderRepository.findById(1L)).thenReturn(this.creatMockedOrderEntity());
+		Mockito.when(productRepository.getById(1L)).thenReturn(this.createMockedProduct().get());
 		Mockito.when(orderRepository.save(Mockito.any())).thenReturn(expectedResult);
 		
 		OrderEntity result = spy.uptdOrder(expectedResult, 1L);

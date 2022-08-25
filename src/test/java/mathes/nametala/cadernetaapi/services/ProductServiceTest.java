@@ -67,15 +67,15 @@ public class ProductServiceTest {
 	@Test
 	public void getProduct_Success() {
 		
-		ProductEntity expectedResult = this.createMockedProduct().get();
+		Optional<ProductEntity> expectedResult = this.createMockedProduct();
 		
-		Mockito.when(productRepository.getById(1L)).thenReturn(expectedResult);
+		Mockito.when(productRepository.findById(1L)).thenReturn(expectedResult);
 		
 		ProductEntity result = productService.getProduct(1L);
 		
-		Mockito.verify(productRepository,times(1)).getById(1L);
+		Mockito.verify(productRepository,times(1)).findById(1L);
 		
-		Assertions.assertEquals(result.toString(), expectedResult.toString());
+		Assertions.assertEquals(result.toString(), expectedResult.get().toString());
 		
 	}
 	
@@ -88,7 +88,7 @@ public class ProductServiceTest {
 	        productService.getProduct(0L);
 	    });
 		
-		Mockito.verify(productRepository,times(1)).getById(0L);
+		Mockito.verify(productRepository,times(1)).findById(0L);
 		
 	}
 	
